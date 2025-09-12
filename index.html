@@ -4,28 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>шифт.покерный клуб.серия</title>
-    
-    <!-- Firebase App (обязательно) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <!-- Firebase Auth -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Firestore -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         * {
             box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.3s ease;
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #2d3748;
+            background: #e6e9ef;
+            color: #4a4a4a;
             padding: 20px;
             min-height: 100vh;
             margin: 0;
@@ -37,86 +28,79 @@
         /* Стили для окна авторизации */
         .login-container {
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
             padding: 40px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 15px 35px rgba(50, 130, 250, 0.2), 
-                        0 5px 15px rgba(0, 0, 0, 0.1);
+            background: #e6e9ef;
+            box-shadow: -10px -10px 30px rgba(255, 255, 255, 0.7), 
+                        10px 10px 30px rgba(174, 174, 192, 0.2);
             position: absolute;
             z-index: 10000;
-            backdrop-filter: blur(10px);
         }
         
         .login-title {
             text-align: center;
             margin-bottom: 30px;
-            color: #2d3748;
-            font-weight: 700;
-            font-size: 32px;
-            background: linear-gradient(90deg, #3182ce, #63b3ed);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 2px 4px rgba(66, 153, 225, 0.2);
+            color: #4a4a4a;
+            font-weight: 600;
+            font-size: 28px;
         }
         
         .input-group {
             margin-bottom: 25px;
-            position: relative;
         }
         
         .input-label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: #4a5568;
+            color: #555;
             padding-left: 5px;
-            font-size: 14px;
         }
         
         .input-field {
             width: 100%;
-            padding: 16px 20px;
+            padding: 15px 20px;
             border: none;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.8);
-            box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.05), 
-                        inset -3px -3px 7px rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            background: #e6e9ef;
+            box-shadow: -10px -10px 10px rgba(255, 255, 255, 0.7), 
+                        10px 10px 10px rgba(174, 174, 192, 0.2);
             font-size: 16px;
-            color: #2d3748;
+            color: #333;
             outline: none;
             transition: all 0.3s ease;
         }
         
         .input-field:focus {
-            box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.05), 
-                        inset -3px -3px 7px rgba(255, 255, 255, 0.8),
-                        0 0 10px rgba(66, 153, 225, 0.5);
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
         .login-button {
             width: 100%;
             padding: 16px;
             border: none;
-            border-radius: 12px;
-            background: linear-gradient(90deg, #3182ce, #63b3ed);
-            box-shadow: 0 4px 10px rgba(66, 153, 225, 0.4);
+            border-radius: 15px;
+            background: #e6e9ef;
+            box-shadow: inset -10px -10px 10px rgba(174, 174, 192, 0.25), 
+                        inset 10px 10px 10px #FFFFFF;
             font-size: 18px;
             font-weight: 600;
-            color: white;
+            color: #4a4a4a;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 10px;
         }
         
         .login-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 14px rgba(66, 153, 225, 0.4);
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
         .login-button:active {
-            transform: translateY(0);
-            box-shadow: 0 4px 10px rgba(66, 153, 225, 0.4);
+            box-shadow: inset -5px -5px 10px rgba(174, 174, 192, 0.25), 
+                        inset 5px 5px 10px #FFFFFF;
         }
         
         .additional-links {
@@ -127,14 +111,14 @@
         }
         
         .link {
-            color: #718096;
+            color: #6b6b6b;
             text-decoration: none;
             transition: color 0.3s ease;
             cursor: pointer;
         }
         
         .link:hover {
-            color: #3182ce;
+            color: #4285f4;
         }
         
         .notification {
@@ -143,16 +127,14 @@
             left: 50%;
             transform: translateX(-50%);
             padding: 15px 25px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 10px 25px rgba(66, 153, 225, 0.3);
+            border-radius: 10px;
+            background: #e6e9ef;
+            box-shadow: -5px -5px 15px rgba(255, 255, 255, 0.7), 
+                        5px 5px 15px rgba(174, 174, 192, 0.2);
             z-index: 10001;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            text-align: center;
-            font-weight: 500;
         }
         
         .notification.show {
@@ -164,17 +146,16 @@
         .container {
             max-width: 1800px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(50, 130, 250, 0.2), 
-                        0 5px 15px rgba(0, 0, 0, 0.1);
-            padding: 30px;
+            background: #e6e9ef;
+            border-radius: 25px;
+            box-shadow: -10px -10px 30px rgba(255, 255, 255, 0.7), 
+                        10px 10px 30px rgba(174, 174, 192, 0.2);
+            padding: 25px;
             position: relative;
             overflow: hidden;
             opacity: 0;
             transform: translateY(20px);
             display: none;
-            backdrop-filter: blur(10px);
         }
         
         .container.show {
@@ -192,32 +173,29 @@
         .header::after {
             content: '';
             display: block;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #3182ce, transparent);
+            height: 2px;
+            background: rgba(174, 174, 192, 0.3);
             margin-top: 15px;
-            border-radius: 3px;
         }
         
         h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             margin-bottom: 5px;
-            background: linear-gradient(90deg, #3182ce, #63b3ed);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            text-shadow: 0 2px 4px rgba(66, 153, 225, 0.2);
+            color: #4a4a4a;
+            font-weight: 600;
         }
         
         .time-display {
             font-size: 1.8rem;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 12px 24px;
+            background: #e6e9ef;
+            padding: 10px 20px;
             border-radius: 15px;
             display: inline-block;
             margin-top: 10px;
             font-weight: bold;
-            color: #3182ce;
-            box-shadow: 0 8px 20px rgba(50, 130, 250, 0.2);
+            color: #4a4a4a;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
         .controls {
@@ -235,100 +213,169 @@
         }
         
         .btn {
-            padding: 14px 28px;
+            padding: 12px 25px;
             border: none;
             border-radius: 15px;
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: linear-gradient(90deg, #3182ce, #63b3ed);
-            color: white;
-            box-shadow: 0 6px 12px rgba(66, 153, 225, 0.3);
+            gap: 8px;
+            background: #e6e9ef;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #4a4a4a;
         }
         
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(66, 153, 225, 0.4);
+            box-shadow: -2px -2px 5px rgba(255, 255, 255, 0.7), 
+                        2px 2px 5px rgba(174, 174, 192, 0.2);
         }
         
         .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 6px 12px rgba(66, 153, 225, 0.3);
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
-        .logout-btn {
+        .settings-btn {
             position: absolute;
-            top: 30px;
-            right: 30px;
-            padding: 12px 20px;
-            border-radius: 12px;
+            top: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(90deg, #e53e3e, #fc8181);
-            box-shadow: 0 6px 12px rgba(245, 101, 101, 0.3);
+            background: #e6e9ef;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
             cursor: pointer;
             z-index: 100;
-            color: white;
-            font-weight: 600;
-            gap: 8px;
         }
         
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(245, 101, 101, 0.4);
+        .settings-btn:hover {
+            box-shadow: -2px -2px 5px rgba(255, 255, 255, 0.7), 
+                        2px 2px 5px rgba(174, 174, 192, 0.2);
+        }
+        
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: #e6e9ef;
+            box-shadow: -5px -5px 15px rgba(255, 255, 255, 0.7), 
+                        5px 5px 15px rgba(174, 174, 192, 0.2);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            transition: right 0.4s ease;
+        }
+        
+        .settings-panel.show {
+            right: 0;
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(174, 174, 192, 0.3);
+        }
+        
+        .settings-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+        
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #4a4a4a;
+        }
+        
+        .user-management, .admin-password {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .user-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background: #e6e9ef;
+            box-shadow: -3px -3px 7px rgba(255, 255, 255, 0.7), 
+                        3px 3px 7px rgba(174, 174, 192, 0.2);
         }
         
         .schedule-container {
             overflow-x: auto;
             margin-bottom: 40px;
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(50, 130, 250, 0.2);
-            background: rgba(255, 255, 255, 0.7);
-            padding: 20px;
-            backdrop-filter: blur(10px);
+            box-shadow: -5px -5px 15px rgba(255, 255, 255, 0.7), 
+                        5px 5px 15px rgba(174, 174, 192, 0.2);
+            background: #e6e9ef;
+            padding: 15px;
         }
         
         .schedule-table {
             width: 100%;
             border-collapse: collapse;
             min-width: 1200px;
-            background: transparent;
+            background: #e6e9ef;
         }
         
         .schedule-table th, .schedule-table td {
-            border: 1px solid rgba(160, 174, 192, 0.3);
-            padding: 8px;
+            border: 1px solid rgba(174, 174, 192, 0.3);
+            padding: 6px;
             text-align: center;
             transition: background-color 0.2s;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         
         .schedule-table td {
-            background: rgba(255, 255, 255, 0.6);
-            color: #2d3748;
-            height: 35px;
+            background: #e6e9ef;
+            color: #4a4a4a;
+            height: 30px;
             cursor: pointer;
         }
         
         .schedule-table th {
-            background: linear-gradient(90deg, #3182ce, #63b3ed);
-            color: white;
-            font-weight: 600;
+            background: #e6e9ef;
+            color: #4a4a4a;
+            font-weight: bold;
             position: sticky;
             top: 0;
             z-index: 10;
-            box-shadow: 0 4px 6px rgba(50, 130, 250, 0.2);
+            box-shadow: 0 2px 5px rgba(174, 174, 192, 0.2);
         }
         
         .schedule-table td.employee-cell {
-            background: rgba(255, 255, 255, 0.8);
+            background: #e6e9ef;
             font-weight: bold;
-            color: #3182ce;
+            color: #4a4a4a;
             position: sticky;
             left: 0;
             z-index: 5;
@@ -338,7 +385,7 @@
         }
         
         .schedule-table td:hover {
-            background: rgba(224, 242, 254, 0.7);
+            background: rgba(174, 174, 192, 0.1);
         }
         
         .schedule-table .time-header {
@@ -354,15 +401,15 @@
         }
         
         .flag-row th {
-            background: linear-gradient(90deg, #3182ce, #63b3ed);
-            color: white;
+            background: #e6e9ef;
+            color: #4a4a4a;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.3s;
         }
         
         .flag-row th:hover {
-            background: linear-gradient(90deg, #2c5282, #4299e1);
+            background: rgba(174, 174, 192, 0.1);
         }
         
         .flag-row .flag-cell {
@@ -371,7 +418,7 @@
         }
         
         .flag-active {
-            color: white;
+            color: #4a4a4a;
             font-size: 1.2rem;
             animation: pulse 1.5s infinite;
         }
@@ -390,60 +437,55 @@
         }
         
         .stat-card {
-            background: rgba(255, 255, 255, 0.8);
+            background: #e6e9ef;
             border-radius: 20px;
-            padding: 20px;
+            padding: 15px 20px;
             flex: 1;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(50, 130, 250, 0.2);
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
             transition: transform 0.3s ease;
-            backdrop-filter: blur(10px);
         }
         
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(50, 130, 250, 0.3);
         }
         
         .stat-card h3 {
             margin-top: 0;
-            color: #3182ce;
+            color: #4a4a4a;
             font-size: 1.2rem;
-            margin-bottom: 15px;
-            font-weight: 600;
+            margin-bottom: 10px;
         }
         
         .stat-value {
             font-size: 2.5rem;
-            font-weight: 800;
-            color: #3182ce;
+            font-weight: bold;
+            color: #4a4a4a;
             margin: 10px 0;
-            text-shadow: 0 2px 4px rgba(66, 153, 225, 0.2);
         }
         
         .stat-label {
             font-size: 1rem;
             opacity: 0.8;
-            color: #4a5568;
         }
         
         .auto-save-indicator {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #3182ce;
-            padding: 12px 24px;
+            background: #e6e9ef;
+            color: #4a4a4a;
+            padding: 10px 20px;
             border-radius: 30px;
-            box-shadow: 0 10px 25px rgba(50, 130, 250, 0.3);
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s;
             display: flex;
             align-items: center;
             gap: 10px;
-            backdrop-filter: blur(10px);
-            font-weight: 500;
         }
         
         .auto-save-indicator.show {
@@ -452,19 +494,19 @@
         
         .dropdown-menu {
             position: fixed;
-            background: rgba(255, 255, 255, 0.95);
+            background: #e6e9ef;
             border-radius: 15px;
-            padding: 15px;
+            padding: 10px;
             z-index: 1000;
             max-height: 300px;
             overflow-y: auto;
-            box-shadow: 0 15px 35px rgba(50, 130, 250, 0.3);
+            box-shadow: -5px -5px 15px rgba(255, 255, 255, 0.7), 
+                        5px 5px 15px rgba(174, 174, 192, 0.2);
             min-width: 250px;
-            backdrop-filter: blur(10px);
         }
         
         .dropdown-item {
-            padding: 12px 16px;
+            padding: 10px 15px;
             border-radius: 10px;
             margin-bottom: 5px;
             cursor: pointer;
@@ -472,24 +514,24 @@
         }
         
         .dropdown-item:hover {
-            background: rgba(224, 242, 254, 0.7);
+            background: rgba(174, 174, 192, 0.1);
         }
         
         .rest-option {
-            background: rgba(72, 187, 120, 0.2);
+            background: rgba(0, 200, 83, 0.1);
             font-weight: bold;
         }
         
         .rest-option:hover {
-            background: rgba(72, 187, 120, 0.3);
+            background: rgba(0, 200, 83, 0.2);
         }
         
         .dropdown-header {
-            padding: 10px 16px;
+            padding: 8px 15px;
             font-weight: bold;
-            color: #3182ce;
-            border-bottom: 1px solid rgba(160, 174, 192, 0.3);
-            margin-bottom: 10px;
+            color: #4a4a4a;
+            border-bottom: 1px solid rgba(174, 174, 192, 0.3);
+            margin-bottom: 8px;
         }
         
         .management-section {
@@ -502,28 +544,27 @@
         .management-card {
             flex: 1;
             min-width: 300px;
-            background: rgba(255, 255, 255, 0.8);
+            background: #e6e9ef;
             border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 15px 35px rgba(50, 130, 250, 0.2);
-            backdrop-filter: blur(10px);
+            padding: 20px;
+            box-shadow: -5px -5px 15px rgba(255, 255, 255, 0.7), 
+                        5px 5px 15px rgba(174, 174, 192, 0.2);
         }
         
         .management-card h2 {
-            color: #3182ce;
+            color: #4a4a4a;
             margin-top: 0;
-            border-bottom: 2px solid rgba(160, 174, 192, 0.3);
-            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(174, 174, 192, 0.3);
+            padding-bottom: 10px;
             font-size: 1.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: 700;
         }
         
         .count-badge {
-            background: rgba(49, 130, 206, 0.2);
-            color: #3182ce;
+            background: rgba(174, 174, 192, 0.1);
+            color: #4a4a4a;
             border-radius: 20px;
             padding: 5px 15px;
             font-size: 1.2rem;
@@ -537,41 +578,43 @@
         
         .input-group input {
             flex: 1;
-            padding: 14px;
+            padding: 12px;
             border: none;
-            border-radius: 12px 0 0 12px;
-            background: rgba(255, 255, 255, 0.7);
-            box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.05), 
-                        inset -3px -3px 7px rgba(255, 255, 255, 0.8);
-            color: #2d3748;
+            border-radius: 15px 0 0 15px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #4a4a4a;
             font-size: 1.1rem;
             outline: none;
         }
         
         .input-group button {
-            border-radius: 0 12px 12px 0;
-            padding: 14px 20px;
-            background: linear-gradient(90deg, #3182ce, #63b3ed);
+            border-radius: 0 15px 15px 0;
+            padding: 12px 20px;
+            background: #e6e9ef;
             border: none;
-            color: white;
-            font-weight: 600;
+            color: #4a4a4a;
+            font-weight: bold;
             cursor: pointer;
             transition: background 0.3s;
-            box-shadow: 0 4px 10px rgba(66, 153, 225, 0.3);
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
         .input-group button:hover {
-            box-shadow: 0 6px 14px rgba(66, 153, 225, 0.4);
+            box-shadow: -2px -2px 5px rgba(255, 255, 255, 0.7), 
+                        2px 2px 5px rgba(174, 174, 192, 0.2);
         }
         
         .list-container {
             max-height: 300px;
             overflow-y: auto;
             border-radius: 15px;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 15px;
-            box-shadow: inset 3px 3px 7px rgba(0, 0, 0, 0.05), 
-                        inset -3px -3px 7px rgba(255, 255, 255, 0.8);
+            background: #e6e9ef;
+            padding: 10px;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
         .list-item {
@@ -580,16 +623,15 @@
             align-items: center;
             padding: 12px;
             margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 12px;
+            background: #e6e9ef;
+            border-radius: 15px;
             transition: background 0.2s;
-            box-shadow: 0 4px 8px rgba(50, 130, 250, 0.1);
+            box-shadow: -3px -3px 7px rgba(255, 255, 255, 0.7), 
+                        3px 3px 7px rgba(174, 174, 192, 0.2);
         }
         
         .list-item:hover {
-            background: rgba(224, 242, 254, 0.7);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(50, 130, 250, 0.2);
+            background: rgba(174, 174, 192, 0.1);
         }
         
         .list-item span {
@@ -597,19 +639,20 @@
         }
         
         .list-item button {
-            background: linear-gradient(90deg, #e53e3e, #fc8181);
+            background: #e6e9ef;
             border: none;
-            color: white;
+            color: #4a4a4a;
             padding: 8px 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             transition: background 0.3s;
-            box-shadow: 0 4px 8px rgba(245, 101, 101, 0.3);
-            font-weight: 600;
+            box-shadow: -3px -3px 7px rgba(255, 255, 255, 0.7), 
+                        3px 3px 7px rgba(174, 174, 192, 0.2);
         }
         
         .list-item button:hover {
-            box-shadow: 0 6px 12px rgba(245, 101, 101, 0.4);
+            box-shadow: -2px -2px 5px rgba(255, 255, 255, 0.7), 
+                        2px 2px 5px rgba(174, 174, 192, 0.2);
         }
         
         .status-indicator {
@@ -621,18 +664,18 @@
         }
         
         .active {
-            background: #38a169;
+            background: #00c853;
         }
         
         .inactive {
-            background: #e53e3e;
+            background: #d50000;
         }
         
         .footer-note {
             text-align: center;
             margin-top: 30px;
             font-style: italic;
-            color: #718096;
+            color: #7b7b7b;
             font-size: 0.9rem;
         }
         
@@ -643,7 +686,7 @@
         
         .occupied-info {
             font-size: 0.8rem;
-            color: #ed8936;
+            color: #ff8c00;
             margin-top: 3px;
         }
         
@@ -669,26 +712,25 @@
         }
         
         .reset-content {
-            background: rgba(255, 255, 255, 0.95);
+            background: #e6e9ef;
             border-radius: 20px;
             padding: 30px;
             max-width: 500px;
             width: 90%;
-            box-shadow: 0 20px 40px rgba(50, 130, 250, 0.3);
+            box-shadow: -10px -10px 30px rgba(255, 255, 255, 0.7), 
+                        10px 10px 30px rgba(174, 174, 192, 0.2);
             text-align: center;
-            backdrop-filter: blur(10px);
         }
         
         .reset-content h2 {
-            color: #3182ce;
+            color: #4a4a4a;
             margin-top: 0;
-            font-weight: 700;
         }
         
         .reset-content p {
             margin-bottom: 25px;
             line-height: 1.6;
-            color: #4a5568;
+            color: #4a4a4a;
         }
         
         .reset-buttons {
@@ -700,16 +742,16 @@
         /* Стили для палитры цветов */
         .color-palette {
             position: fixed;
-            background: rgba(255, 255, 255, 0.95);
+            background: #e6e9ef;
             border-radius: 15px;
             padding: 15px;
             z-index: 1000;
-            box-shadow: 0 15px 35px rgba(50, 130, 250, 0.3);
+            box-shadow: -5px -5px 15px rgba(255, 255, 255, 0.7), 
+                        5px 5px 15px rgba(174, 174, 192, 0.2);
             display: none;
             flex-wrap: wrap;
             gap: 10px;
             width: 200px;
-            backdrop-filter: blur(10px);
         }
         
         .color-palette.active {
@@ -727,30 +769,31 @@
         
         .color-option:hover {
             transform: scale(1.2);
-            border-color: #3182ce;
+            border-color: #4a4a4a;
         }
         
         .reset-color {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             margin-top: 10px;
-            background: linear-gradient(90deg, #3182ce, #63b3ed);
-            color: white;
+            background: #e6e9ef;
+            color: #4a4a4a;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             transition: background 0.3s;
-            box-shadow: 0 4px 8px rgba(66, 153, 225, 0.3);
-            font-weight: 600;
+            box-shadow: -3px -3px 7px rgba(255, 255, 255, 0.7), 
+                        3px 3px 7px rgba(174, 174, 192, 0.2);
         }
         
         .reset-color:hover {
-            box-shadow: 0 6px 12px rgba(66, 153, 225, 0.4);
+            box-shadow: -2px -2px 5px rgba(255, 255, 255, 0.7), 
+                        2px 2px 5px rgba(174, 174, 192, 0.2);
         }
         
         @media (max-width: 1200px) {
             .schedule-container {
-                padding: 15px;
+                padding: 10px;
             }
             
             .schedule-table th, .schedule-table td {
@@ -759,7 +802,7 @@
             }
             
             .btn {
-                padding: 12px 20px;
+                padding: 10px 20px;
                 font-size: 1rem;
             }
             
@@ -783,11 +826,11 @@
             }
             
             h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
             
             .stat-card {
-                padding: 15px;
+                padding: 10px 15px;
             }
             
             .stat-value {
@@ -805,11 +848,9 @@
                 transform: translateX(-50%);
             }
             
-            .logout-btn {
-                top: 20px;
-                right: 20px;
-                padding: 10px 15px;
-                font-size: 0.9rem;
+            .settings-panel {
+                width: 100%;
+                right: -100%;
             }
         }
     </style>
@@ -820,8 +861,8 @@
         <h1 class="login-title">Авторизация</h1>
         <form id="loginForm">
             <div class="input-group">
-                <label for="email" class="input-label">Email</label>
-                <input type="email" id="email" class="input-field" placeholder="Введите ваш email" required>
+                <label for="username" class="input-label">Логин</label>
+                <input type="text" id="username" class="input-field" placeholder="Введите ваш логин" required>
             </div>
             <div class="input-group">
                 <label for="password" class="input-label">Пароль</label>
@@ -840,9 +881,9 @@
 
     <!-- Основной контейнер -->
     <div class="container" id="main-container">
-        <!-- Кнопка выхода -->
-        <div class="logout-btn" id="logout-btn">
-            <i class="fas fa-sign-out-alt"></i> Выход
+        <!-- Кнопка настроек (только для администратора) -->
+        <div class="settings-btn" id="settings-btn" style="display: none;">
+            <i class="fas fa-cog"></i>
         </div>
         
         <div class="header">
@@ -940,11 +981,11 @@
         </div>
         
         <div class="footer-note">
-            Все изменения автоматически сохраняются в Firebase. При перезагрузке страницы данные будут восстановлены.
+            Все изменения автоматически сохраняются в вашем браузере. При перезагрузке страницы данные будут восстановлены.
         </div>
         
         <div class="auto-save-indicator" id="auto-save-indicator">
-            <i class="fas fa-check-circle"></i> Данные сохранены в Firebase
+            <i class="fas fa-check-circle"></i> Данные сохранены
         </div>
         
         <!-- Модальное окно сброса -->
@@ -985,25 +1026,43 @@
             <div class="color-option" data-color="#ff6e40" style="background-color: #ff6e40;"></div>
             <button class="reset-color" id="reset-color">Сбросить цвет</button>
         </div>
+        
+        <!-- Панель настроек администратора -->
+        <div class="settings-panel" id="settings-panel">
+            <div class="settings-header">
+                <h2 class="settings-title">Настройки администратора</h2>
+                <button class="close-settings" id="close-settings"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="user-management">
+                <h3>Управление пользователями</h3>
+                <div class="input-group">
+                    <input type="text" id="new-username" placeholder="Логин нового пользователя">
+                    <input type="password" id="new-password" placeholder="Пароль">
+                    <button id="add-user"><i class="fas fa-plus"></i> Добавить</button>
+                </div>
+                <div class="user-list" id="user-list">
+                    <!-- Список пользователей будет добавлен динамически -->
+                </div>
+            </div>
+            
+            <div class="admin-password">
+                <h3>Сменить пароль администратора</h3>
+                <div class="input-group">
+                    <input type="password" id="current-password" placeholder="Текущий пароль">
+                    <input type="password" id="new-admin-password" placeholder="Новый пароль">
+                    <button id="change-password"><i class="fas fa-key"></i> Сменить</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB3b9VVd2SmqYLCWcYI4sAuNucA5200N30",
-            authDomain: "project-rotation-pokercm.firebaseapp.com",
-            projectId: "project-rotation-pokercm",
-            storageBucket: "project-rotation-pokercm.firebasestorage.app",
-            messagingSenderId: "1020145891293",
-            appId: "1:1020145891293:web:068320820d9fd1c374a834",
-            measurementId: "G-SY4Z0RW480"
+        // Данные пользователей
+        let users = {
+            'admin': '123456'
         };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
+        
         // Текущий пользователь
         let currentUser = null;
         
@@ -1011,12 +1070,26 @@
         let employees = [];
         let tables = [];
         let schedule = {};
-        let employeeOrder = [];
-        let timeFlags = {};
-        let employeeColors = {};
+        let employeeOrder = []; // Массив для хранения порядка сотрудников
+        let timeFlags = {}; // Объект для хранения флагов временных интервалов
         
         // Генерация временных интервалов
         const timeIntervals = generateTimeIntervals();
+        
+        // Ключи для localStorage
+        const STORAGE_KEYS = {
+            EMPLOYEES: 'casino_rotation_employees',
+            TABLES: 'casino_rotation_tables',
+            SCHEDULE: 'casino_rotation_schedule',
+            LAST_SAVE: 'casino_rotation_last_save',
+            EMPLOYEE_ORDER: 'casino_rotation_employee_order',
+            EMPLOYEE_COLORS: 'casino_rotation_employee_colors',
+            TIME_FLAGS: 'casino_rotation_time_flags',
+            USERS: 'casino_rotation_users'
+        };
+        
+        // Объект для хранения цветов сотрудников
+        let employeeColors = {};
         
         // Инициализация графика
         function initializeSchedule() {
@@ -1039,10 +1112,11 @@
             let hour = 8;
             let minute = 0;
             
-            for (let i = 0; i < 48; i++) {
+            for (let i = 0; i < 48; i++) { // 24 часа * 2 (каждые 30 минут)
                 const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                 intervals.push(timeStr);
                 
+                // Увеличиваем время на 30 минут
                 minute += 30;
                 if (minute >= 60) {
                     hour += 1;
@@ -1074,98 +1148,115 @@
         
         // Обновление статистики
         function updateStats() {
+            // Подсчет активных и общих сотрудников
             const activeEmployees = employees.filter(e => e.active).length;
             const totalEmployees = employees.length;
             
+            // Подсчет активных и общих столов
             const activeTables = tables.filter(t => t.active).length;
             const totalTables = tables.length;
             
+            // Обновление элементов
             document.getElementById('active-employees-count').textContent = activeEmployees;
             document.getElementById('total-employees-count').textContent = totalEmployees;
             document.getElementById('active-tables-count').textContent = activeTables;
             document.getElementById('total-tables-count').textContent = totalTables;
             
+            // Обновление значков в заголовках
             document.getElementById('employee-badge').textContent = `${activeEmployees}/${totalEmployees}`;
             document.getElementById('table-badge').textContent = `${activeTables}/${totalTables}`;
             
-            const lastSave = localStorage.getItem('lastSave');
+            // Обновление времени последнего сохранения
+            const lastSave = localStorage.getItem(STORAGE_KEYS.LAST_SAVE);
             document.getElementById('last-save').textContent = lastSave ? new Date(parseInt(lastSave)).toLocaleTimeString() : '-';
         }
         
-        // Сохранение данных в Firebase
-        function saveToFirebase() {
-            if (!currentUser) return;
-            
+        // Сохранение данных в localStorage
+        function saveToLocalStorage() {
             try {
-                const userData = {
-                    employees: employees,
-                    tables: tables,
-                    schedule: schedule,
-                    employeeOrder: employeeOrder,
-                    employeeColors: employeeColors,
-                    timeFlags: timeFlags,
-                    lastSave: Date.now()
-                };
+                localStorage.setItem(STORAGE_KEYS.EMPLOYEES, JSON.stringify(employees));
+                localStorage.setItem(STORAGE_KEYS.TABLES, JSON.stringify(tables));
+                localStorage.setItem(STORAGE_KEYS.SCHEDULE, JSON.stringify(schedule));
+                localStorage.setItem(STORAGE_KEYS.LAST_SAVE, Date.now().toString());
+                localStorage.setItem(STORAGE_KEYS.EMPLOYEE_ORDER, JSON.stringify(employeeOrder));
+                localStorage.setItem(STORAGE_KEYS.EMPLOYEE_COLORS, JSON.stringify(employeeColors));
+                localStorage.setItem(STORAGE_KEYS.TIME_FLAGS, JSON.stringify(timeFlags));
+                localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
                 
-                db.collection('users').doc(currentUser.uid).set(userData)
-                    .then(() => {
-                        // Показываем индикатор сохранения
-                        const indicator = document.getElementById('auto-save-indicator');
-                        indicator.classList.add('show');
-                        setTimeout(() => {
-                            indicator.classList.remove('show');
-                        }, 2000);
-                        
-                        updateStats();
-                    })
-                    .catch((error) => {
-                        console.error('Ошибка сохранения данных:', error);
-                        showNotification('Ошибка сохранения данных в Firebase');
-                    });
+                // Показываем индикатор сохранения
+                const indicator = document.getElementById('auto-save-indicator');
+                indicator.classList.add('show');
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                }, 2000);
+                
+                updateStats();
+                return true;
             } catch (e) {
                 console.error('Ошибка сохранения данных:', e);
-                showNotification('Ошибка сохранения данных');
+                alert('Ошибка сохранения данных. Возможно, превышен лимит хранилища.');
+                return false;
             }
         }
         
-        // Загрузка данных из Firebase
-        function loadFromFirebase() {
-            if (!currentUser) return;
-            
-            db.collection('users').doc(currentUser.uid).get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        employees = data.employees || [];
-                        tables = data.tables || [];
-                        schedule = data.schedule || {};
-                        employeeOrder = data.employeeOrder || employees.map(e => e.id);
-                        employeeColors = data.employeeColors || {};
-                        timeFlags = data.timeFlags || {};
-                        
-                        // Если данных нет, создаем демо-данные
-                        if (employees.length === 0 || tables.length === 0) {
-                            createDemoData();
-                        }
-                        
-                        initializeSchedule();
-                        renderSchedule();
-                        renderEmployeeList();
-                        renderTableList();
-                    } else {
-                        createDemoData();
-                        saveToFirebase();
-                    }
-                })
-                .catch((error) => {
-                    console.error('Ошибка загрузки данных:', error);
+        // Загрузка данных из localStorage
+        function loadFromLocalStorage() {
+            try {
+                const savedEmployees = localStorage.getItem(STORAGE_KEYS.EMPLOYEES);
+                const savedTables = localStorage.getItem(STORAGE_KEYS.TABLES);
+                const savedSchedule = localStorage.getItem(STORAGE_KEYS.SCHEDULE);
+                const savedEmployeeOrder = localStorage.getItem(STORAGE_KEYS.EMPLOYEE_ORDER);
+                const savedEmployeeColors = localStorage.getItem(STORAGE_KEYS.EMPLOYEE_COLORS);
+                const savedTimeFlags = localStorage.getItem(STORAGE_KEYS.TIME_FLAGS);
+                const savedUsers = localStorage.getItem(STORAGE_KEYS.USERS);
+                
+                if (savedEmployees) employees = JSON.parse(savedEmployees);
+                if (savedTables) tables = JSON.parse(savedTables);
+                if (savedSchedule) schedule = JSON.parse(savedSchedule);
+                if (savedEmployeeOrder) employeeOrder = JSON.parse(savedEmployeeOrder);
+                if (savedEmployeeColors) employeeColors = JSON.parse(savedEmployeeColors);
+                if (savedTimeFlags) timeFlags = JSON.parse(savedTimeFlags);
+                if (savedUsers) users = JSON.parse(savedUsers);
+                
+                // Если данных нет, создаем демо-данные
+                if (employees.length === 0 || tables.length === 0) {
                     createDemoData();
-                });
+                }
+                
+                // Инициализируем порядок сотрудников, если он пустой
+                if (!employeeOrder || employeeOrder.length === 0) {
+                    employeeOrder = employees.map(e => e.id);
+                }
+                
+                // Инициализируем цвета сотрудников, если их нет
+                if (!employeeColors) {
+                    employeeColors = {};
+                }
+                
+                // Инициализируем Турнир временных интервалов, если их нет
+                if (!timeFlags) {
+                    timeFlags = {};
+                }
+                
+                // Инициализируем пользователей, если их нет
+                if (!users || Object.keys(users).length === 0) {
+                    users = {'admin': '123456'};
+                }
+                
+                initializeSchedule();
+                return true;
+            } catch (e) {
+                console.error('Ошибка загрузки данных:', e);
+                createDemoData();
+                users = {'admin': '123456'};
+                return false;
+            }
         }
         
         // Создание демо-данных
         function createDemoData() {
-            employees = [];
+            employees = [
+            ];
             
             tables = [
                 { id: 1, name: "1", active: true },
@@ -1205,9 +1296,722 @@
             schedule = {};
             initializeSchedule();
             
+            // Инициализация порядка сотрудников
             employeeOrder = employees.map(e => e.id);
+            
+            // Инициализация цветов сотрудников
             employeeColors = {};
+            
+            // Инициализация флагов временных интервалов
             timeFlags = {};
+        }
+        
+        // Сброс приложения к базовым настройкам
+        function resetToDefaults() {
+            // Показать модальное окно
+            document.getElementById('reset-modal').classList.add('active');
+        }
+        
+        // Подтверждение сброса
+        function confirmReset() {
+            // Очищаем localStorage
+            localStorage.clear();
+            
+            // Создаем демо-данные
+            createDemoData();
+            
+            // Сохраняем демо-данные
+            saveToLocalStorage();
+            
+            // Перерисовываем интерфейс
+            renderSchedule();
+            renderEmployeeList();
+            renderTableList();
+            
+            // Скрываем модальное окно
+            document.getElementById('reset-modal').classList.remove('active');
+            
+            // Показываем уведомление
+            showNotification('Приложение успешно сброшено к базовым настройкам!');
+        }
+        
+        // Экспорт данных (для резервного копирования)
+        function exportData() {
+            const data = {
+                employees: employees,
+                tables: tables,
+                schedule: schedule,
+                employeeOrder: employeeOrder,
+                employeeColors: employeeColors,
+                timeFlags: timeFlags,
+                users: users,
+                timestamp: Date.now()
+            };
+            
+            const dataStr = JSON.stringify(data);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `график_ротации_резервная_копия_${new Date().toLocaleDateString('ru-RU')}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            document.body.appendChild(linkElement);
+            
+            // Запуск скачивания
+            linkElement.click();
+            document.body.removeChild(linkElement);
+        }
+        
+        // Импорт данных
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('Вы уверены, что хотите заменить текущие данные импортируемыми? Текущие данные будут потеряны.')) {
+                        employees = data.employees || [];
+                        tables = data.tables || [];
+                        schedule = data.schedule || {};
+                        employeeOrder = data.employeeOrder || employees.map(e => e.id);
+                        employeeColors = data.employeeColors || {};
+                        timeFlags = data.timeFlags || {};
+                        users = data.users || {'admin': '123456'};
+                        
+                        initializeSchedule();
+                        renderSchedule();
+                        renderEmployeeList();
+                        renderTableList();
+                        saveToLocalStorage();
+                        
+                        showNotification('Данные успешно импортированы!');
+                    }
+                } catch (e) {
+                    console.error('Ошибка импорта данных:', e);
+                    showNotification('Ошибка импорта данных. Файл поврежден или имеет неверный формат.');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // Сортировка сотрудников: активные сверху, неактивные снизу
+        function sortEmployees() {
+            // Сортируем по активности и затем по порядку в employeeOrder
+            employees.sort((a, b) => {
+                if (a.active && !b.active) return -1;
+                if (!a.active && b.active) return 1;
+                
+                // Для активных сотрудников сохраняем порядок из employeeOrder
+                const aIndex = employeeOrder.indexOf(a.id);
+                const bIndex = employeeOrder.indexOf(b.id);
+                
+                if (aIndex !== -1 && bIndex !== -1) {
+                    return aIndex - bIndex;
+                }
+                
+                return a.id - b.id;
+            });
+        }
+        
+        // Очистка графика
+        function clearSchedule() {
+            if (confirm("Вы уверены, что хотите очистить весь график? Все назначения будут удалены.")) {
+                employees.forEach(employee => {
+                    timeIntervals.forEach((_, index) => {
+                        schedule[employee.id][index] = null;
+                    });
+                });
+                renderSchedule();
+                saveToLocalStorage();
+            }
+        }
+        
+        // Отрисовка таблицы графика
+        function renderSchedule() {
+            sortEmployees(); // Сортируем сотрудников перед отрисовкой
+            
+            const table = document.getElementById('rotation-schedule');
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+            
+            // Очистка таблицы
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+            
+            // Создаем строку с флагами
+            const flagRow = document.createElement('tr');
+            flagRow.className = 'flag-row';
+            
+            // Первая ячейка строки флагов
+            const flagHeader = document.createElement('th');
+            flagHeader.textContent = 'Турнир / Время';
+            flagRow.appendChild(flagHeader);
+            
+            // Заголовки времени и ячейки флагов
+            timeIntervals.forEach((time, index) => {
+                // Ячейка флага
+                const flagTh = document.createElement('th');
+                flagTh.className = 'flag-cell';
+                flagTh.dataset.timeIndex = index;
+                flagTh.addEventListener('click', handleFlagClick);
+                
+                // Если флаг установлен, отображаем "⭐"
+                if (timeFlags[index]) {
+                    flagTh.innerHTML = '<span class="flag-active">⭐</span>';
+                } else {
+                    flagTh.innerHTML = '<span class="flag-inactive"></span>';
+                }
+                
+                flagRow.appendChild(flagTh);
+            });
+            
+            // Создаем строку с заголовками времени
+            const timeRow = document.createElement('tr');
+            const timeHeader = document.createElement('th');
+            timeHeader.textContent = 'Сотрудник / Время';
+            timeRow.appendChild(timeHeader);
+            
+            // Заголовки времени
+            timeIntervals.forEach(time => {
+                const th = document.createElement('th');
+                th.textContent = time;
+                th.className = 'time-header';
+                timeRow.appendChild(th);
+            });
+            
+            // Добавляем строки в thead
+            thead.appendChild(flagRow);
+            thead.appendChild(timeRow);
+            
+            // Строки для сотрудников
+            employees.forEach(employee => {
+                const tr = document.createElement('tr');
+                if (!employee.active) {
+                    tr.className = 'inactive-row';
+                }
+                
+                // Добавляем атрибуты для DnD
+                tr.draggable = true;
+                tr.dataset.employeeId = employee.id;
+                
+                // Обработчики событий перетаскивания
+                tr.addEventListener('dragstart', handleDragStart);
+                tr.addEventListener('dragover', handleDragOver);
+                tr.addEventListener('drop', handleDrop);
+                tr.addEventListener('dragend', handleDragEnd);
+                
+                // Ячейка с именем сотрудника
+                const nameTd = document.createElement('td');
+                nameTd.textContent = employee.name;
+                nameTd.className = 'employee-cell';
+                nameTd.dataset.employeeId = employee.id;
+                
+                // Применяем цвет сотрудника, если он есть
+                if (employeeColors[employee.id]) {
+                    nameTd.style.backgroundColor = employeeColors[employee.id];
+                    nameTd.style.color = getContrastColor(employeeColors[employee.id]);
+                }
+                
+                if (!employee.active) {
+                    nameTd.style.opacity = '0.6';
+                    nameTd.style.textDecoration = 'line-through';
+                }
+                
+                // Добавляем обработчик клика для выбора цвета
+                nameTd.addEventListener('click', handleEmployeeColorClick);
+                
+                tr.appendChild(nameTd);
+                
+                // Ячейки для временных интервалов
+                timeIntervals.forEach((_, index) => {
+                    const td = document.createElement('td');
+                    const assignment = schedule[employee.id]?.[index];
+                    
+                    if (assignment && assignment.rest) {
+                        td.textContent = '/';
+                        td.style.backgroundColor = 'rgba(0, 200, 83, 0.1)';
+                        td.style.fontWeight = 'bold';
+                    } else if (assignment && assignment.tableId) {
+                        const tableObj = tables.find(t => t.id === assignment.tableId);
+                        if (tableObj) {
+                            td.textContent = tableObj.name;
+                            if (!tableObj.active) {
+                                td.style.opacity = '0.7';
+                                td.style.textDecoration = 'line-through';
+                            }
+                        } else {
+                            td.textContent = 'Стол удалён';
+                            td.style.opacity = '0.5';
+                        }
+                    } else {
+                        td.textContent = '-';
+                        td.style.opacity = '0.5';
+                    }
+                    
+                    if (employee.active) {
+                        td.dataset.employeeId = employee.id;
+                        td.dataset.timeIndex = index;
+                        td.addEventListener('click', handleCellClick);
+                    }
+                    
+                    tr.appendChild(td);
+                });
+                
+                tbody.appendChild(tr);
+            });
+            
+            // Обновляем статистику
+            updateStats();
+        }
+        
+        // Обработка клика по флагу
+        function handleFlagClick(event) {
+            const timeIndex = parseInt(event.currentTarget.dataset.timeIndex);
+            
+            // Переключаем флаг
+            timeFlags[timeIndex] = !timeFlags[timeIndex];
+            
+            // Сохраняем и перерисовываем
+            renderSchedule();
+            saveToLocalStorage();
+        }
+        
+        // Получение занятых столов для временного интервала
+        function getOccupiedTables(timeIndex) {
+            const occupied = {};
+            employees.forEach(employee => {
+                const assignment = schedule[employee.id]?.[timeIndex];
+                if (assignment && assignment.tableId) {
+                    occupied[assignment.tableId] = true;
+                }
+            });
+            return occupied;
+        }
+        
+        // Обработка клика по ячейке
+        function handleCellClick(event) {
+            event.stopPropagation(); // Предотвращаем всплытие
+            
+            const employeeId = parseInt(event.target.dataset.employeeId);
+            const timeIndex = parseInt(event.target.dataset.timeIndex);
+            
+            // Получаем занятые столы в этом интервале
+            const occupiedTables = getOccupiedTables(timeIndex);
+            
+            // Создаем выпадающее меню
+            const dropdown = document.createElement('div');
+            dropdown.className = 'dropdown-menu';
+            
+            // Позиционируем меню рядом с курсором
+            const rect = event.target.getBoundingClientRect();
+            dropdown.style.left = `${rect.left}px`;
+            dropdown.style.top = `${rect.bottom}px`;
+            
+            // Заголовок меню
+            const header = document.createElement('div');
+            header.className = 'dropdown-header';
+            header.textContent = `Назначение на ${timeIntervals[timeIndex]}`;
+            dropdown.appendChild(header);
+            
+            // Добавляем опцию "/"
+            const restOption = document.createElement('div');
+            restOption.className = 'dropdown-item rest-option';
+            restOption.innerHTML = '<i class="fas fa-coffee"></i> /';
+            restOption.onclick = () => {
+                schedule[employeeId][timeIndex] = { rest: true };
+                renderSchedule();
+                saveToLocalStorage();
+                document.getElementById('dropdown-container').innerHTML = '';
+            };
+            dropdown.appendChild(restOption);
+            
+            // Добавляем разделитель
+            const separator = document.createElement('div');
+            separator.style.height = '1px';
+            separator.style.background = 'rgba(174, 174, 192, 0.3)';
+            separator.style.margin = '8px 0';
+            dropdown.appendChild(separator);
+            
+            // Заголовок для столов
+            const tablesHeader = document.createElement('div');
+            tablesHeader.className = 'dropdown-header';
+            tablesHeader.textContent = `Столы (${tables.filter(t => t.active).length} доступно):`;
+            dropdown.appendChild(tablesHeader);
+            
+            // Добавляем активные столы
+            tables.filter(table => table.active).forEach(table => {
+                const tableOption = document.createElement('div');
+                tableOption.className = 'dropdown-item';
+                
+                // Если стол занят, помечаем его
+                if (occupiedTables[table.id]) {
+                    tableOption.classList.add('occupied');
+                    tableOption.innerHTML = `<i class="fas fa-ban"></i> ${table.name}`;
+                    const occupiedInfo = document.createElement('div');
+                    occupiedInfo.className = 'occupied-info';
+                    occupiedInfo.textContent = 'Занят другим сотрудником';
+                    tableOption.appendChild(occupiedInfo);
+                } else {
+                    tableOption.innerHTML = `<i class="fas fa-dice"></i> ${table.name}`;
+                    tableOption.onclick = () => {
+                        schedule[employeeId][timeIndex] = { tableId: table.id };
+                        renderSchedule();
+                        saveToLocalStorage();
+                        document.getElementById('dropdown-container').innerHTML = '';
+                    };
+                }
+                
+                dropdown.appendChild(tableOption);
+            });
+            
+            // Добавляем кнопку для очистки
+            const clearOption = document.createElement('div');
+            clearOption.className = 'dropdown-item';
+            clearOption.style.color = '#ff8c00';
+            clearOption.innerHTML = '<i class="fas fa-times"></i> Очистить';
+            clearOption.onclick = () => {
+                schedule[employeeId][timeIndex] = null;
+                renderSchedule();
+                saveToLocalStorage();
+                document.getElementById('dropdown-container').innerHTML = '';
+            };
+            dropdown.appendChild(clearOption);
+            
+            // Добавляем меню на страницу
+            document.getElementById('dropdown-container').innerHTML = '';
+            document.getElementById('dropdown-container').appendChild(dropdown);
+            
+            // Закрытие меню при клике вне его
+            document.addEventListener('click', closeDropdowns);
+        }
+        
+        // Обработка клика по имени сотрудника для выбора цвета
+        function handleEmployeeColorClick(event) {
+            event.stopPropagation();
+            
+            const employeeId = parseInt(event.target.dataset.employeeId);
+            
+            // Показываем палитру цветов
+            const palette = document.getElementById('color-palette');
+            palette.style.left = `${event.clientX}px`;
+            palette.style.top = `${event.clientY}px`;
+            palette.classList.add('active');
+            palette.dataset.employeeId = employeeId;
+            
+            // Закрытие других меню
+            document.getElementById('dropdown-container').innerHTML = '';
+        }
+        
+        // Функция для получения контрастного цвета текста
+        function getContrastColor(hexColor) {
+            // Если hexColor не определен, возвращаем черный
+            if (!hexColor) return '#000000';
+            
+            // Преобразуем hex в RGB
+            const r = parseInt(hexColor.substr(1, 2), 16);
+            const g = parseInt(hexColor.substr(3, 2), 16);
+            const b = parseInt(hexColor.substr(5, 2), 16);
+            
+            // Вычисляем яркость цвета
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            
+            // Возвращаем белый или черный в зависимости от яркости
+            return brightness > 128 ? '#000000' : '#FFFFFF';
+        }
+        
+        // Закрытие всех выпадающих меню
+        function closeDropdowns(event) {
+            const dropdownContainer = document.getElementById('dropdown-container');
+            if (dropdownContainer && !dropdownContainer.contains(event.target)) {
+                dropdownContainer.innerHTML = '';
+            }
+            
+            // Закрытие палитры цветов
+            const palette = document.getElementById('color-palette');
+            if (palette && !palette.contains(event.target) && 
+                !event.target.classList.contains('employee-cell')) {
+                palette.classList.remove('active');
+            }
+        }
+        
+        // Отрисовка списка сотрудников
+        function renderEmployeeList() {
+            sortEmployees(); // Сортируем сотрудников перед отрисовкой
+            
+            const listContainer = document.getElementById('employee-list');
+            listContainer.innerHTML = '';
+            
+            employees.forEach(employee => {
+                const listItem = document.createElement('div');
+                listItem.className = 'list-item';
+                
+                const span = document.createElement('span');
+                const status = document.createElement('span');
+                status.className = `status-indicator ${employee.active ? 'active' : 'inactive'}`;
+                span.appendChild(status);
+                span.appendChild(document.createTextNode(employee.name));
+                
+                const btn = document.createElement('button');
+                if (employee.active) {
+                    btn.innerHTML = '<i class="fas fa-trash"></i> Пауза';
+                    btn.onclick = () => {
+                        employee.active = false;
+                        renderEmployeeList();
+                        renderSchedule();
+                        saveToLocalStorage();
+                    };
+                } else {
+                    btn.innerHTML = '<i class="fas fa-undo"></i> Восстановить';
+                    btn.onclick = () => {
+                        employee.active = true;
+                        renderEmployeeList();
+                        renderSchedule();
+                        saveToLocalStorage();
+                    };
+                }
+                
+                listItem.appendChild(span);
+                listItem.appendChild(btn);
+                listContainer.appendChild(listItem);
+            });
+            
+            // Обновляем статистику
+            updateStats();
+        }
+        
+        // Отрисовка списка столов
+        function renderTableList() {
+            const listContainer = document.getElementById('table-list');
+            listContainer.innerHTML = '';
+            
+            tables.forEach(table => {
+                const listItem = document.createElement('div');
+                listItem.className = 'list-item';
+                
+                const span = document.createElement('span');
+                const status = document.createElement('span');
+                status.className = `status-indicator ${table.active ? 'active' : 'inactive'}`;
+                span.appendChild(status);
+                span.appendChild(document.createTextNode(table.name));
+                
+                const btn = document.createElement('button');
+                if (table.active) {
+                    btn.innerHTML = '<i class="fas fa-trash"></i> Закрыть';
+                    btn.onclick = () => {
+                        table.active = false;
+                        renderTableList();
+                        renderSchedule();
+                        saveToLocalStorage();
+                    };
+                } else {
+                    btn.innerHTML = '<i class="fas fa-undo"></i> Открыть';
+                    btn.onclick = () => {
+                        table.active = true;
+                        renderTableList();
+                        renderSchedule();
+                        saveToLocalStorage();
+                    };
+                }
+                
+                listItem.appendChild(span);
+                listItem.appendChild(btn);
+                listContainer.appendChild(listItem);
+            });
+            
+            // Обновляем статистику
+            updateStats();
+        }
+        
+        // Отрисовка списка пользователей
+        function renderUserList() {
+            const userList = document.getElementById('user-list');
+            userList.innerHTML = '';
+            
+            for (const username in users) {
+                if (username === 'admin') continue; // Пропускаем администратора
+                
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                
+                const userSpan = document.createElement('span');
+                userSpan.textContent = username;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Удалить';
+                deleteBtn.onclick = () => {
+                    delete users[username];
+                    renderUserList();
+                    saveToLocalStorage();
+                    showNotification('Пользователь удален');
+                };
+                
+                userItem.appendChild(userSpan);
+                userItem.appendChild(deleteBtn);
+                userList.appendChild(userItem);
+            }
+        }
+        
+        // Авторотация
+        function autoRotation() {
+            const now = new Date();
+            const startHour = 8;
+            const startMinute = 0;
+            
+            // Вычисляем текущий временной интервал
+            const startTime = new Date();
+            startTime.setHours(startHour, startMinute, 0, 0);
+            
+            // Если текущее время до 8:00, используем предыдущий день
+            if (now < startTime) {
+                startTime.setDate(startTime.getDate() - 1);
+            }
+            
+            const diffMinutes = (now - startTime) / (1000 * 60);
+            const currentIntervalIndex = Math.floor(diffMinutes / 30);
+            
+            // Берем следующий интервал
+            const nextIntervalIndex = currentIntervalIndex + 1;
+            
+            // Проверяем, что интервал в пределах графика
+            if (nextIntervalIndex >= timeIntervals.length) {
+                showNotification('Достигнут конец графика!');
+                return;
+            }
+            
+            // Собираем информацию о предыдущих назначениях
+            const prevAssignments = {};
+            employees.forEach(employee => {
+                if (employee.active) {
+                    prevAssignments[employee.id] = schedule[employee.id]?.[nextIntervalIndex - 1] || null;
+                }
+            });
+            
+            // Доступные столы
+            const availableTables = tables.filter(table => table.active).map(table => table.id);
+            const tableUsage = {};
+            
+            // Функция для получения случайного элемента из массива
+            function getRandomItem(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+            }
+            
+            // Назначаем сотрудников
+            employees.filter(emp => emp.active).forEach(employee => {
+                // Пропускаем, если уже есть назначение
+                if (schedule[employee.id][nextIntervalIndex]) return;
+                
+                // Определяем предыдущее назначение
+                const prev = prevAssignments[employee.id];
+                
+                // Исключаем предыдущий стол
+                const availableForEmployee = [...availableTables];
+                if (prev && prev.tableId) {
+                    const index = availableForEmployee.indexOf(prev.tableId);
+                    if (index !== -1) availableForEmployee.splice(index, 1);
+                }
+                
+                // Выбираем случайный стол из доступных
+                if (availableForEmployee.length > 0) {
+                    const selectedTable = getRandomItem(availableForEmployee);
+                    schedule[employee.id][nextIntervalIndex] = { tableId: selectedTable };
+                    
+                    // Удаляем выбранный стол из доступных
+                    const tableIndex = availableTables.indexOf(selectedTable);
+                    if (tableIndex !== -1) availableTables.splice(tableIndex, 1);
+                    
+                    // Запоминаем использование стола
+                    tableUsage[selectedTable] = true;
+                } else {
+                    // Если нет доступных столов - назначаем /
+                    schedule[employee.id][nextIntervalIndex] = { rest: true };
+                }
+            });
+            
+            renderSchedule();
+            saveToLocalStorage();
+            showNotification(`Авторотация выполнена для интервала ${timeIntervals[nextIntervalIndex]}`);
+        }
+        
+        // Сохранение в Excel (CSV формат)
+        function saveToExcel() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            // Заголовки
+            const headers = ['Сотрудник', ...timeIntervals];
+            csvContent += headers.join(";") + "\r\n";
+            
+            // Данные
+            employees.forEach(employee => {
+                const row = [employee.name];
+                timeIntervals.forEach((_, index) => {
+                    const assignment = schedule[employee.id]?.[index];
+                    if (assignment && assignment.rest) {
+                        row.push('/');
+                    } else if (assignment && assignment.tableId) {
+                        const tableObj = tables.find(t => t.id === assignment.tableId);
+                        row.push(tableObj ? tableObj.name : 'Стол удалён');
+                    } else {
+                        row.push('-');
+                    }
+                });
+                csvContent += row.join(";") + "\r\n";
+            });
+            
+            // Создание ссылки для скачивания
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "шифт_серия.csv");
+            document.body.appendChild(link);
+            
+            // Запуск скачивания
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Обработчики для DnD (перетаскивание сотрудников)
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.employeeId);
+            this.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation();
+            
+            if (dragSrcEl !== this) {
+                const draggedId = parseInt(dragSrcEl.dataset.employeeId);
+                const targetId = parseInt(this.dataset.employeeId);
+                
+                // Находим индексы в порядке
+                const draggedIndex = employeeOrder.indexOf(draggedId);
+                const targetIndex = employeeOrder.indexOf(targetId);
+                
+                // Обновляем порядок
+                employeeOrder.splice(draggedIndex, 1);
+                employeeOrder.splice(targetIndex, 0, draggedId);
+                
+                // Сохраняем и перерисовываем
+                saveToLocalStorage();
+                renderSchedule();
+            }
+            
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
         }
         
         // Показать уведомление
@@ -1221,14 +2025,17 @@
             }, 3000);
         }
         
-        // Остальной код (рендеринг таблицы, обработчики событий и т.д.) остается таким же, как в предыдущей версии
-        // Для экономии места я не буду дублировать весь код, но он должен быть перенесен из предыдущей версии
-
         // Инициализация приложения
         function initApp() {
+            // Загрузка данных из localStorage
+            loadFromLocalStorage();
+            
             updateCurrentTime();
             setInterval(updateCurrentTime, 1000);
-            loadFromFirebase();
+            renderSchedule();
+            renderEmployeeList();
+            renderTableList();
+            renderUserList();
             
             // Обработчики событий
             document.getElementById('add-employee').addEventListener('click', () => {
@@ -1243,8 +2050,9 @@
                     };
                     
                     employees.push(newEmployee);
-                    employeeOrder.push(newEmployee.id);
+                    employeeOrder.push(newEmployee.id); // Добавляем в конец порядка
                     
+                    // Инициализируем график для нового сотрудника
                     schedule[newEmployee.id] = {};
                     timeIntervals.forEach((_, index) => {
                         schedule[newEmployee.id][index] = null;
@@ -1253,29 +2061,141 @@
                     nameInput.value = '';
                     renderEmployeeList();
                     renderSchedule();
-                    saveToFirebase();
+                    saveToLocalStorage();
                 } else if (name) {
                     showNotification('Сотрудник с таким именем уже существует!');
                 }
             });
             
-            // Добавьте остальные обработчики событий как в предыдущей версии
+            document.getElementById('add-table').addEventListener('click', () => {
+                const nameInput = document.getElementById('table-name');
+                const name = nameInput.value.trim();
+                
+                if (name && !tables.some(t => t.name === name)) {
+                    tables.push({
+                        id: Date.now(),
+                        name: name,
+                        active: true
+                    });
+                    nameInput.value = '';
+                    renderTableList();
+                    saveToLocalStorage();
+                } else if (name) {
+                    showNotification('Стол с таким названием уже существует!');
+                }
+            });
             
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                auth.signOut().then(() => {
-                    showNotification('Вы вышли из системы');
-                    setTimeout(() => {
-                        document.getElementById('main-container').classList.remove('show');
-                        setTimeout(() => {
-                            document.getElementById('main-container').style.display = 'none';
-                            document.getElementById('login-container').style.display = 'block';
-                            setTimeout(() => {
-                                document.getElementById('login-container').style.opacity = '1';
-                                document.getElementById('login-container').style.transform = 'translateY(0)';
-                            }, 50);
-                        }, 300);
-                    }, 1000);
+            document.getElementById('employee-name').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('add-employee').click();
+            });
+            
+            document.getElementById('table-name').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('add-table').click();
+            });
+            
+            document.getElementById('auto-rotation').addEventListener('click', autoRotation);
+            document.getElementById('save-excel').addEventListener('click', saveToExcel);
+            document.getElementById('clear-schedule').addEventListener('click', clearSchedule);
+            document.getElementById('backup-data').addEventListener('click', exportData);
+            document.getElementById('reset-app').addEventListener('click', resetToDefaults);
+            document.getElementById('confirm-reset').addEventListener('click', confirmReset);
+            document.getElementById('cancel-reset').addEventListener('click', () => {
+                document.getElementById('reset-modal').classList.remove('active');
+            });
+            
+            // Обработчики для выбора цвета
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    const color = e.target.dataset.color;
+                    const employeeId = parseInt(document.getElementById('color-palette').dataset.employeeId);
+                    
+                    if (employeeId && color) {
+                        employeeColors[employeeId] = color;
+                        renderSchedule();
+                        saveToLocalStorage();
+                    }
+                    
+                    document.getElementById('color-palette').classList.remove('active');
                 });
+            });
+            
+            document.getElementById('reset-color').addEventListener('click', () => {
+                const employeeId = parseInt(document.getElementById('color-palette').dataset.employeeId);
+                
+                if (employeeId) {
+                    delete employeeColors[employeeId];
+                    renderSchedule();
+                    saveToLocalStorage();
+                }
+                
+                document.getElementById('color-palette').classList.remove('active');
+            });
+            
+            // Создаем скрытый input для импорта данных
+            const importInput = document.createElement('input');
+            importInput.type = 'file';
+            importInput.accept = '.json';
+            importInput.style.display = 'none';
+            importInput.addEventListener('change', importData);
+            document.body.appendChild(importInput);
+            
+            // Добавляем кнопку импорта
+            const importButton = document.createElement('button');
+            importButton.className = 'btn';
+            importButton.innerHTML = '<i class="fas fa-file-import"></i> Импорт данных';
+            importButton.onclick = () => importInput.click();
+            document.querySelector('.btn-group').appendChild(importButton);
+            
+            // Обработчик для закрытия выпадающих меню
+            document.addEventListener('click', closeDropdowns);
+            
+            // Автосохранение при закрытии страницы
+            window.addEventListener('beforeunload', (event) => {
+                saveToLocalStorage();
+            });
+            
+            // Обработчики для настроек администратора
+            document.getElementById('settings-btn').addEventListener('click', () => {
+                document.getElementById('settings-panel').classList.add('show');
+            });
+            
+            document.getElementById('close-settings').addEventListener('click', () => {
+                document.getElementById('settings-panel').classList.remove('show');
+            });
+            
+            document.getElementById('add-user').addEventListener('click', () => {
+                const username = document.getElementById('new-username').value.trim();
+                const password = document.getElementById('new-password').value.trim();
+                
+                if (username && password) {
+                    if (users[username]) {
+                        showNotification('Пользователь с таким логином уже существует!');
+                    } else {
+                        users[username] = password;
+                        document.getElementById('new-username').value = '';
+                        document.getElementById('new-password').value = '';
+                        renderUserList();
+                        saveToLocalStorage();
+                        showNotification('Пользователь добавлен');
+                    }
+                } else {
+                    showNotification('Заполните все поля!');
+                }
+            });
+            
+            document.getElementById('change-password').addEventListener('click', () => {
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-admin-password').value;
+                
+                if (currentPassword === users['admin']) {
+                    users['admin'] = newPassword;
+                    document.getElementById('current-password').value = '';
+                    document.getElementById('new-admin-password').value = '';
+                    saveToLocalStorage();
+                    showNotification('Пароль администратора изменен');
+                } else {
+                    showNotification('Текущий пароль неверен!');
+                }
             });
         }
         
@@ -1283,81 +2203,47 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    currentUser = userCredential.user;
+            if (users[username] && users[username] === password) {
+                currentUser = username;
+                
+                // Скрываем форму авторизации
+                document.getElementById('login-container').style.opacity = '0';
+                document.getElementById('login-container').style.transform = 'translateY(-20px)';
+                
+                setTimeout(() => {
+                    document.getElementById('login-container').style.display = 'none';
                     
-                    // Скрываем форму авторизации
-                    document.getElementById('login-container').style.opacity = '0';
-                    document.getElementById('login-container').style.transform = 'translateY(-20px)';
-                    
+                    // Показываем основное приложение
+                    document.getElementById('main-container').style.display = 'block';
                     setTimeout(() => {
-                        document.getElementById('login-container').style.display = 'none';
-                        
-                        // Показываем основное приложение
-                        document.getElementById('main-container').style.display = 'block';
-                        setTimeout(() => {
-                            document.getElementById('main-container').classList.add('show');
-                        }, 50);
-                        
-                        // Инициализируем приложение
-                        initApp();
-                    }, 300);
-                })
-                .catch((error) => {
-                    showNotification('Ошибка авторизации: ' + error.message);
-                });
+                        document.getElementById('main-container').classList.add('show');
+                    }, 50);
+                    
+                    // Инициализируем приложение
+                    initApp();
+                    
+                    // Показываем кнопку настроек только для администратора
+                    if (username === 'admin') {
+                        document.getElementById('settings-btn').style.display = 'flex';
+                    }
+                }, 300);
+            } else {
+                showNotification('Неверный логин или пароль!');
+            }
         });
         
         // Обработка кнопок "Забыли пароль" и "Регистрация"
         document.getElementById('forgot-password').addEventListener('click', function(e) {
             e.preventDefault();
-            const email = prompt('Введите ваш email для восстановления пароля:');
-            if (email) {
-                auth.sendPasswordResetEmail(email)
-                    .then(() => {
-                        showNotification('Письмо для восстановления пароля отправлено на ' + email);
-                    })
-                    .catch((error) => {
-                        showNotification('Ошибка: ' + error.message);
-                    });
-            }
+            showNotification('Обратитесь к администратору');
         });
         
         document.getElementById('register').addEventListener('click', function(e) {
             e.preventDefault();
-            const email = prompt('Введите email для регистрации:');
-            const password = prompt('Введите пароль:');
-            if (email && password) {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .then((userCredential) => {
-                        showNotification('Аккаунт успешно создан!');
-                    })
-                    .catch((error) => {
-                        showNotification('Ошибка регистрации: ' + error.message);
-                    });
-            }
-        });
-        
-        // Слушатель изменения состояния аутентификации
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('main-container').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('main-container').classList.add('show');
-                }, 50);
-                initApp();
-            } else {
-                document.getElementById('login-container').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('login-container').style.opacity = '1';
-                    document.getElementById('login-container').style.transform = 'translateY(0)';
-                }, 50);
-            }
+            showNotification('Обратитесь к администратору');
         });
     </script>
 </body>
