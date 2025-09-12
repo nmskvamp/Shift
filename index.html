@@ -3,19 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>шифт.покерный клуб.серия</title>
+    <title>Шифт.Покерный клуб.Серия</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase App (the core Firebase SDK) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <!-- Firebase Authentication -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <!-- Firebase Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
+        /* Общие стили */
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -24,22 +20,185 @@
         body {
             background: #e6e9ef;
             color: #5a7d9a;
-            padding: 20px;
             min-height: 100vh;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+        }
+        
+        /* Стили для страницы авторизации */
+        #login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+        }
+        
+        .login-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .large-circle {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: #e6e9ef;
+            box-shadow: -10px -10px 10px rgba(255, 255, 255, 0.7), 
+                        10px 10px 10px rgba(174, 174, 192, 0.2),
+                        15px 15px 25px rgba(100, 200, 255, 0.5);
+            position: relative;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .large-circle:hover {
+            transform: scale(1.02);
+        }
+
+        .small-circle {
+            position: absolute;
+            top: -25px;
+            right: -25px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e6e9ef;
+            box-shadow: inset -10px -10px 10px rgba(174, 174, 192, 0.25), 
+                        inset 10px 10px 10px #FFFFFF,
+                        10px 10px 20px rgba(100, 200, 255, 0.6);
+            z-index: 2;
+            transition: transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .small-circle:hover {
+            transform: scale(1.1);
+        }
+
+        .question-mark {
+            color: #ff3b30;
+            font-size: 40px;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .form-group {
+            width: 80%;
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #5a7d9a;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+
+        .switch-container {
+            width: 80%;
+            margin-top: 15px;
+        }
+
+        .switch-track {
+            width: 100%;
+            height: 40px;
+            background: #e6e9ef;
+            border-radius: 25px;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .switch-thumb {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 30px;
+            height: 30px;
+            background: #e6e9ef;
+            border-radius: 50%;
+            box-shadow: -3px -3px 5px rgba(255, 255, 255, 0.7), 
+                        3px 3px 5px rgba(174, 174, 192, 0.2);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .switch-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: #ff9500;
+            border-radius: 25px;
+            transition: width 0.3s ease;
+        }
+
+        .switch-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #5a7d9a;
+            font-size: 14px;
+            font-weight: bold;
+            user-select: none;
+            white-space: nowrap;
+            z-index: 1;
+        }
+
+        .swiped .switch-thumb {
+            left: calc(100% - 35px);
+        }
+
+        .swiped .switch-fill {
+            width: 100%;
+        }
+
+        .swiped .switch-text {
+            color: white;
+        }
+        
+        /* Стили для основного приложения */
+        #app-page {
+            display: none;
+            width: 100%;
+            max-width: 1800px;
         }
         
         .container {
-            width: 100%;
-            max-width: 1800px;
+            margin: 0 auto;
             background: #e6e9ef;
-            border-radius: 25px;
+            border-radius: 15px;
             box-shadow: -10px -10px 20px rgba(255, 255, 255, 0.7), 
                         10px 10px 20px rgba(174, 174, 192, 0.2);
-            padding: 30px;
+            padding: 25px;
             position: relative;
             overflow: hidden;
         }
@@ -48,48 +207,35 @@
             text-align: center;
             margin-bottom: 30px;
             position: relative;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        }
+        
+        .header::after {
+            content: '';
+            display: block;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ff9500, transparent);
+            margin-top: 10px;
         }
         
         h1 {
             font-size: 2.5rem;
             margin-bottom: 5px;
-            color: #5a7d9a;
             text-shadow: 2px 2px 4px rgba(174, 174, 192, 0.2),
-                        -2px -2px 4px rgba(255, 255, 255, 0.7);
+                         -2px -2px 4px rgba(255, 255, 255, 0.7);
+            color: #5a7d9a;
         }
         
         .time-display {
             font-size: 1.8rem;
+            background: #e6e9ef;
             padding: 10px 20px;
-            border-radius: 15px;
+            border-radius: 10px;
             display: inline-block;
             margin-top: 10px;
             font-weight: bold;
             color: #5a7d9a;
-            background: #e6e9ef;
             box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
                         inset 5px 5px 10px rgba(174, 174, 192, 0.2);
-        }
-        
-        .logout-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 15px;
-            background: #e6e9ef;
-            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
-                        5px 5px 10px rgba(174, 174, 192, 0.2);
-            color: #5a7d9a;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .logout-btn:hover {
-            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
-                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .controls {
@@ -109,37 +255,37 @@
         .btn {
             padding: 12px 25px;
             border: none;
-            border-radius: 15px;
+            border-radius: 20px;
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
             display: flex;
             align-items: center;
             gap: 8px;
             background: #e6e9ef;
-            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
-                        5px 5px 10px rgba(174, 174, 192, 0.2);
             color: #5a7d9a;
         }
         
         .btn:hover {
-            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
-                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
-        .btn:active {
-            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
-                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        .btn-primary {
+            background: #e6e9ef;
+            color: #5a7d9a;
         }
         
         .schedule-container {
             overflow-x: auto;
             margin-bottom: 40px;
-            border-radius: 15px;
-            background: #e6e9ef;
+            border-radius: 12px;
             box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
                         inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            background: #e6e9ef;
             padding: 15px;
         }
         
@@ -148,14 +294,16 @@
             border-collapse: collapse;
             min-width: 1200px;
             background: #e6e9ef;
-            border-radius: 15px;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            border-radius: 12px;
         }
         
         .schedule-table th, .schedule-table td {
             border: 1px solid #d1d9e6;
             padding: 6px;
             text-align: center;
-            transition: all 0.2s;
+            transition: background-color 0.2s;
             font-size: 0.9rem;
         }
         
@@ -164,8 +312,6 @@
             color: #5a7d9a;
             height: 30px;
             cursor: pointer;
-            box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.7), 
-                        inset 2px 2px 5px rgba(174, 174, 192, 0.2);
         }
         
         .schedule-table th {
@@ -175,8 +321,8 @@
             position: sticky;
             top: 0;
             z-index: 10;
-            box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.7), 
-                        inset 2px 2px 5px rgba(174, 174, 192, 0.2);
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .schedule-table td.employee-cell {
@@ -189,13 +335,16 @@
             min-width: 180px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.7), 
-                        inset 2px 2px 5px rgba(174, 174, 192, 0.2);
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .schedule-table td:hover {
-            box-shadow: inset -1px -1px 2px rgba(255, 255, 255, 0.7), 
-                        inset 1px 1px 2px rgba(174, 174, 192, 0.2);
+            background: rgba(210, 215, 225, 0.8);
+        }
+        
+        .schedule-table .time-header {
+            min-width: 100px;
         }
         
         .schedule-table .inactive-row {
@@ -206,19 +355,19 @@
             text-decoration: line-through;
         }
         
+        /* Стили для строки с флагами */
         .flag-row th {
             background: #e6e9ef;
             color: #5a7d9a;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.7), 
-                        inset 2px 2px 5px rgba(174, 174, 192, 0.2);
+            transition: background 0.3s;
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .flag-row th:hover {
-            box-shadow: inset -1px -1px 2px rgba(255, 255, 255, 0.7), 
-                        inset 1px 1px 2px rgba(174, 174, 192, 0.2);
+            background: rgba(210, 215, 225, 0.8);
         }
         
         .flag-row .flag-cell {
@@ -229,14 +378,23 @@
         .flag-active {
             color: #ff9500;
             font-size: 1.2rem;
+            animation: pulse 1.5s infinite;
         }
         
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Стили для ручной сортировки */
         .schedule-table tbody tr {
             cursor: move;
         }
         
         .schedule-table tbody tr.dragging {
             opacity: 0.5;
+            background: rgba(255, 149, 0, 0.2);
         }
         
         .stats-container {
@@ -254,12 +412,12 @@
             text-align: center;
             box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
                         5px 5px 10px rgba(174, 174, 192, 0.2);
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease;
         }
         
         .stat-card:hover {
-            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
-                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
         .stat-card h3 {
@@ -272,7 +430,7 @@
         .stat-value {
             font-size: 2.5rem;
             font-weight: bold;
-            color: #5a7d9a;
+            color: #ff9500;
             margin: 10px 0;
         }
         
@@ -285,12 +443,11 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #e6e9ef;
-            color: #5a7d9a;
+            background: rgba(0, 200, 83, 0.7);
+            color: white;
             padding: 10px 20px;
             border-radius: 30px;
-            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
-                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s;
@@ -321,25 +478,31 @@
             border-radius: 10px;
             margin-bottom: 5px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background 0.2s;
             background: #e6e9ef;
             box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
                         3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .dropdown-item:hover {
-            box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.7), 
-                        inset 2px 2px 5px rgba(174, 174, 192, 0.2);
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .rest-option {
+            background: rgba(0, 200, 83, 0.3);
             font-weight: bold;
+        }
+        
+        .rest-option:hover {
+            background: rgba(0, 200, 83, 0.5);
         }
         
         .dropdown-header {
             padding: 8px 15px;
             font-weight: bold;
-            color: #5a7d9a;
+            color: #ff9500;
+            border-bottom: 1px solid #d1d9e6;
             margin-bottom: 8px;
         }
         
@@ -363,6 +526,7 @@
         .management-card h2 {
             color: #5a7d9a;
             margin-top: 0;
+            border-bottom: 2px solid #d1d9e6;
             padding-bottom: 10px;
             font-size: 1.8rem;
             display: flex;
@@ -371,14 +535,12 @@
         }
         
         .count-badge {
-            background: #e6e9ef;
-            color: #5a7d9a;
+            background: rgba(255, 149, 0, 0.2);
+            color: #ff9500;
             border-radius: 20px;
             padding: 5px 15px;
             font-size: 1.2rem;
             font-weight: bold;
-            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
-                        3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .input-group {
@@ -390,7 +552,7 @@
             flex: 1;
             padding: 12px;
             border: none;
-            border-radius: 15px 0 0 15px;
+            border-radius: 20px 0 0 20px;
             background: #e6e9ef;
             color: #5a7d9a;
             font-size: 1.1rem;
@@ -399,21 +561,20 @@
         }
         
         .input-group button {
-            border-radius: 0 15px 15px 0;
+            border-radius: 0 20px 20px 0;
             padding: 12px 20px;
-            background: #e6e9ef;
+            background: #ff9500;
             border: none;
-            color: #5a7d9a;
+            color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.3s;
             box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
                         5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
         .input-group button:hover {
-            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
-                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+            background: #ffaa33;
         }
         
         .list-container {
@@ -434,14 +595,14 @@
             margin-bottom: 10px;
             background: #e6e9ef;
             border-radius: 15px;
-            transition: all 0.2s;
+            transition: background 0.2s;
             box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
                         3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .list-item:hover {
-            box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.7), 
-                        inset 2px 2px 5px rgba(174, 174, 192, 0.2);
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .list-item span {
@@ -449,20 +610,19 @@
         }
         
         .list-item button {
-            background: #e6e9ef;
+            background: #ff3b30;
             border: none;
-            color: #5a7d9a;
+            color: white;
             padding: 8px 15px;
-            border-radius: 10px;
+            border-radius: 15px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.3s;
             box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
                         3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .list-item button:hover {
-            box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.7), 
-                        inset 2px 2px 5px rgba(174, 174, 192, 0.2);
+            background: #ff6b60;
         }
         
         .status-indicator {
@@ -471,8 +631,8 @@
             height: 12px;
             border-radius: 50%;
             margin-right: 10px;
-            box-shadow: -2px -2px 3px rgba(255, 255, 255, 0.7), 
-                        2px 2px 3px rgba(174, 174, 192, 0.2);
+            box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.7), 
+                        2px 2px 4px rgba(174, 174, 192, 0.2);
         }
         
         .active {
@@ -480,14 +640,14 @@
         }
         
         .inactive {
-            background: #d50000;
+            background: #ff3b30;
         }
         
         .footer-note {
             text-align: center;
             margin-top: 30px;
             font-style: italic;
-            color: #8a9ba8;
+            color: #8fa0b5;
             font-size: 0.9rem;
         }
         
@@ -498,7 +658,7 @@
         
         .occupied-info {
             font-size: 0.8rem;
-            color: #ff8c00;
+            color: #ff9500;
             margin-top: 3px;
         }
         
@@ -525,7 +685,7 @@
         
         .reset-content {
             background: #e6e9ef;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 30px;
             max-width: 500px;
             width: 90%;
@@ -535,7 +695,7 @@
         }
         
         .reset-content h2 {
-            color: #5a7d9a;
+            color: #ff9500;
             margin-top: 0;
         }
         
@@ -551,6 +711,7 @@
             gap: 20px;
         }
         
+        /* Стили для палитры цветов */
         .color-palette {
             position: fixed;
             background: #e6e9ef;
@@ -582,26 +743,49 @@
         
         .color-option:hover {
             transform: scale(1.2);
-            border-color: #5a7d9a;
+            border-color: white;
         }
         
         .reset-color {
             width: 100%;
             padding: 8px;
             margin-top: 10px;
-            background: #e6e9ef;
-            color: #5a7d9a;
+            background: #ff9500;
+            color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background 0.3s;
             box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
                         3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .reset-color:hover {
-            box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.7), 
-                        inset 2px 2px 5px rgba(174, 174, 192, 0.2);
+            background: #ffaa33;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 15px;
+            background: #e6e9ef;
+            color: #ff3b30;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logout-btn:hover {
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
         @media (max-width: 1200px) {
@@ -660,155 +844,188 @@
                 left: 50% !important;
                 transform: translateX(-50%);
             }
+            
+            .logout-btn {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Шифт.Покерный клуб.Серия</h1>
-            <div>
+    <!-- Страница авторизации -->
+    <div id="login-page">
+        <div class="login-container">
+            <div class="large-circle">
+                <div class="form-group">
+                    <input type="text" class="form-input" id="login-email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" id="login-password" placeholder="Password">
+                </div>
+                <div class="switch-container">
+                    <div class="switch-track" id="switch">
+                        <div class="switch-fill"></div>
+                        <div class="switch-thumb"></div>
+                        <div class="switch-text">Сдвиньте, чтобы войти</div>
+                    </div>
+                </div>
+            </div>
+            <div class="small-circle">
+                <div class="question-mark">?</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основное приложение -->
+    <div id="app-page">
+        <button class="logout-btn" id="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Выйти
+        </button>
+        
+        <div class="container">
+            <div class="header">
+                <h1>Шифт.Покерный клуб.Серия</h1>
                 <div class="time-display" id="current-time"></div>
-                <button class="logout-btn" id="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i> Выйти
-                </button>
-            </div>
-        </div>
-        
-        <div class="controls">
-            <div class="btn-group">
-                <button class="btn" id="auto-rotation">
-                    <i class="fas fa-sync-alt"></i> Авторотация
-                </button>
-                <button class="btn" id="save-excel">
-                    <i class="fas fa-file-excel"></i> Сохранить в Excel
-                </button>
-                <button class="btn" id="clear-schedule">
-                    <i class="fas fa-broom"></i> Очистить график
-                </button>
-                <button class="btn" id="backup-data">
-                    <i class="fas fa-save"></i> Сохранить данные
-                </button>
-                <button class="btn" id="reset-app">
-                    <i class="fas fa-redo"></i> Полный сброс
-                </button>
-            </div>
-        </div>
-        
-        <div class="schedule-container">
-            <table class="schedule-table" id="rotation-schedule">
-                <thead>
-                    <tr class="flag-row">
-                        <th>Турнир / Время</th>
-                        <!-- Ячейки флагов будут добавлены динамически -->
-                    </tr>
-                    <tr>
-                        <th>Сотрудник / Время</th>
-                        <!-- Временные интервалы будут добавлены динамически -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Данные будут добавлены динамически -->
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Статистика -->
-        <div class="stats-container">
-            <div class="stat-card">
-                <h3><i class="fas fa-users"></i> Активных сотрудников</h3>
-                <div class="stat-value" id="active-employees-count">0</div>
-                <div class="stat-label">Всего: <span id="total-employees-count">0</span></div>
             </div>
             
-            <div class="stat-card">
-                <h3><i class="fas fa-table"></i> Активных столов</h3>
-                <div class="stat-value" id="active-tables-count">0</div>
-                <div class="stat-label">Всего: <span id="total-tables-count">0</span></div>
-            </div>
-            
-            <div class="stat-card">
-                <h3><i class="fas fa-database"></i> Состояние данных</h3>
-                <div class="stat-value" id="last-save">-</div>
-                <div class="stat-label">Автосохранение включено</div>
-            </div>
-        </div>
-        
-        <div class="management-section">
-            <div class="management-card">
-                <h2>
-                    Управление сотрудниками
-                    <span class="count-badge" id="employee-badge">0/0</span>
-                </h2>
-                <div class="input-group">
-                    <input type="text" id="employee-name" placeholder="Введите ФИО сотрудника">
-                    <button id="add-employee"><i class="fas fa-plus"></i> Добавить</button>
-                </div>
-                <div class="list-container" id="employee-list">
-                    <!-- Список сотрудников будет добавлен динамически -->
-                </div>
-            </div>
-            
-            <div class="management-card">
-                <h2>
-                    Управление столами
-                    <span class="count-badge" id="table-badge">0/0</span>
-                </h2>
-                <div class="input-group">
-                    <input type="text" id="table-name" placeholder="Введите название стола">
-                    <button id="add-table"><i class="fas fa-plus"></i> Добавить</button>
-                </div>
-                <div class="list-container" id="table-list">
-                    <!-- Список столов будет добавлен динамически -->
-                </div>
-            </div>
-        </div>
-        
-        <div class="footer-note">
-            Все изменения автоматически сохраняются в базе данных Firebase.
-        </div>
-        
-        <div class="auto-save-indicator" id="auto-save-indicator">
-            <i class="fas fa-check-circle"></i> Данные сохранены
-        </div>
-        
-        <!-- Модальное окно сброса -->
-        <div class="reset-modal" id="reset-modal">
-            <div class="reset-content">
-                <h2><i class="fas fa-exclamation-triangle"></i> Сброс приложения</h2>
-                <p>Вы уверены, что хотите сбросить к базовым настройкам? Все текущие данные будут удалены и заменены демо-данными. Это действие нельзя отменить.</p>
-                <div class="reset-buttons">
-                    <button class="btn" id="confirm-reset">
-                        <i class="fas fa-trash-alt"></i> Да, понеслась
+            <div class="controls">
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="auto-rotation">
+                        <i class="fas fa-sync-alt"></i> Авторотация
                     </button>
-                    <button class="btn" id="cancel-reset">
-                        <i class="fas fa-times"></i> Отмена
+                    <button class="btn btn-info" id="save-excel">
+                        <i class="fas fa-file-excel"></i> Сохранить в Excel
+                    </button>
+                    <button class="btn btn-warning" id="clear-schedule">
+                        <i class="fas fa-broom"></i> Очистить график
+                    </button>
+                    <button class="btn btn-purple" id="backup-data">
+                        <i class="fas fa-save"></i> Сохранить данные
+                    </button>
+                    <button class="btn btn-dark" id="reset-app">
+                        <i class="fas fa-redo"></i> Полный сброс
                     </button>
                 </div>
             </div>
-        </div>
-        
-        <div id="dropdown-container"></div>
-        
-        <!-- Палитра цветов -->
-        <div class="color-palette" id="color-palette">
-            <div class="color-option" data-color="#ff5252" style="background-color: #ff5252;"></div>
-            <div class="color-option" data-color="#ff4081" style="background-color: #ff4081;"></div>
-            <div class="color-option" data-color="#e040fb" style="background-color: #e040fb;"></div>
-            <div class="color-option" data-color="#7c4dff" style="background-color: #7c4dff;"></div>
-            <div class="color-option" data-color="#536dfe" style="background-color: #536dfe;"></div>
-            <div class="color-option" data-color="#448aff" style="background-color: #448aff;"></div>
-            <div class="color-option" data-color="#40c4ff" style="background-color: #40c4ff;"></div>
-            <div class="color-option" data-color="#18ffff" style="background-color: #18ffff;"></div>
-            <div class="color-option" data-color="#64ffda" style="background-color: #64ffda;"></div>
-            <div class="color-option" data-color="#69f0ae" style="background-color: #69f0ae;"></div>
-            <div class="color-option" data-color="#b2ff59" style="background-color: #b2ff59;"></div>
-            <div class="color-option" data-color="#eeff41" style="background-color: #eeff41;"></div>
-            <div class="color-option" data-color="#ffff00" style="background-color: #ffff00;"></div>
-            <div class="color-option" data-color="#ffd740" style="background-color: #ffd740;"></div>
-            <div class="color-option" data-color="#ffab40" style="background-color: #ffab40;"></div>
-            <div class="color-option" data-color="#ff6e40" style="background-color: #ff6e40;"></div>
-            <button class="reset-color" id="reset-color">Сбросить цвет</button>
+            
+            <div class="schedule-container">
+                <table class="schedule-table" id="rotation-schedule">
+                    <thead>
+                        <tr class="flag-row">
+                            <th>Турнир / Время</th>
+                            <!-- Ячейки флагов будут добавлены динамически -->
+                        </tr>
+                        <tr>
+                            <th>Сотрудник / Время</th>
+                            <!-- Временные интервалы будут добавлены динамически -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Данные будут добавлены динамически -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Статистика -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3><i class="fas fa-users"></i> Активных сотрудников</h3>
+                    <div class="stat-value" id="active-employees-count">0</div>
+                    <div class="stat-label">Всего: <span id="total-employees-count">0</span></div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3><i class="fas fa-table"></i> Активных столов</h3>
+                    <div class="stat-value" id="active-tables-count">0</div>
+                    <div class="stat-label">Всего: <span id="total-tables-count">0</span></div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3><i class="fas fa-database"></i> Состояние данных</h3>
+                    <div class="stat-value" id="last-save">-</div>
+                    <div class="stat-label">Автосохранение включено</div>
+                </div>
+            </div>
+            
+            <div class="management-section">
+                <div class="management-card">
+                    <h2>
+                        Управление сотрудниками
+                        <span class="count-badge" id="employee-badge">0/0</span>
+                    </h2>
+                    <div class="input-group">
+                        <input type="text" id="employee-name" placeholder="Введите ФИО сотрудника">
+                        <button id="add-employee"><i class="fas fa-plus"></i> Добавить</button>
+                    </div>
+                    <div class="list-container" id="employee-list">
+                        <!-- Список сотрудников будет добавлен динамически -->
+                    </div>
+                </div>
+                
+                <div class="management-card">
+                    <h2>
+                        Управление столами
+                        <span class="count-badge" id="table-badge">0/0</span>
+                    </h2>
+                    <div class="input-group">
+                        <input type="text" id="table-name" placeholder="Введите название стола">
+                        <button id="add-table"><i class="fas fa-plus"></i> Добавить</button>
+                    </div>
+                    <div class="list-container" id="table-list">
+                        <!-- Список столов будет добавлен динамически -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-note">
+                Все изменения автоматически сохраняются в Firebase.
+            </div>
+            
+            <div class="auto-save-indicator" id="auto-save-indicator">
+                <i class="fas fa-check-circle"></i> Данные сохранены
+            </div>
+            
+            <!-- Модальное окно сброса -->
+            <div class="reset-modal" id="reset-modal">
+                <div class="reset-content">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Сброс приложения</h2>
+                    <p>Вы уверены, что хотите сбросить к базовым настройкам? Все текущие данные будут удалены и заменены демо-данными. Это действие нельзя отменить.</p>
+                    <div class="reset-buttons">
+                        <button class="btn btn-danger" id="confirm-reset">
+                            <i class="fas fa-trash-alt"></i> Да, понеслась
+                        </button>
+                        <button class="btn btn-success" id="cancel-reset">
+                            <i class="fas fa-times"></i> Отмена
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dropdown-container"></div>
+            
+            <!-- Палитра цветов -->
+            <div class="color-palette" id="color-palette">
+                <div class="color-option" data-color="#ff5252" style="background-color: #ff5252;"></div>
+                <div class="color-option" data-color="#ff4081" style="background-color: #ff4081;"></div>
+                <div class="color-option" data-color="#e040fb" style="background-color: #e040fb;"></div>
+                <div class="color-option" data-color="#7c4dff" style="background-color: #7c4dff;"></div>
+                <div class="color-option" data-color="#536dfe" style="background-color: #536dfe;"></div>
+                <div class="color-option" data-color="#448aff" style="background-color: #448aff;"></div>
+                <div class="color-option" data-color="#40c4ff" style="background-color: #40c4ff;"></div>
+                <div class="color-option" data-color="#18ffff" style="background-color: #18ffff;"></div>
+                <div class="color-option" data-color="#64ffda" style="background-color: #64ffda;"></div>
+                <div class="color-option" data-color="#69f0ae" style="background-color: #69f0ae;"></div>
+                <div class="color-option" data-color="#b2ff59" style="background-color: #b2ff59;"></div>
+                <div class="color-option" data-color="#eeff41" style="background-color: #eeff41;"></div>
+                <div class="color-option" data-color="#ffff00" style="background-color: #ffff00;"></div>
+                <div class="color-option" data-color="#ffd740" style="background-color: #ffd740;"></div>
+                <div class="color-option" data-color="#ffab40" style="background-color: #ffab40;"></div>
+                <div class="color-option" data-color="#ff6e40" style="background-color: #ff6e40;"></div>
+                <button class="reset-color" id="reset-color">Сбросить цвет</button>
+            </div>
         </div>
     </div>
 
@@ -824,10 +1041,12 @@
             appId: "1:1020145891293:web:068320820d9fd1c374a834",
             measurementId: "G-SY4Z0RW480"
         };
-        
+
         // Инициализация Firebase
         firebase.initializeApp(firebaseConfig);
-        
+        const auth = firebase.auth();
+        const database = firebase.database();
+
         // Инициализация данных
         let employees = [];
         let tables = [];
@@ -909,15 +1128,16 @@
             document.getElementById('employee-badge').textContent = `${activeEmployees}/${totalEmployees}`;
             document.getElementById('table-badge').textContent = `${activeTables}/${totalTables}`;
             
-            const lastSave = localStorage.getItem('lastSave');
-            document.getElementById('last-save').textContent = lastSave ? new Date(parseInt(lastSave)).toLocaleTimeString() : '-';
+            document.getElementById('last-save').textContent = new Date().toLocaleTimeString();
         }
         
         // Сохранение данных в Firebase
         function saveToFirebase() {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                const userRef = firebase.database().ref('users/' + user.uid);
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            try {
+                const userRef = database.ref('users/' + user.uid);
                 userRef.set({
                     employees: employees,
                     tables: tables,
@@ -926,48 +1146,68 @@
                     employeeColors: employeeColors,
                     timeFlags: timeFlags,
                     lastSave: Date.now()
-                }).then(() => {
-                    // Показываем индикатор сохранения
-                    const indicator = document.getElementById('auto-save-indicator');
-                    indicator.classList.add('show');
-                    setTimeout(() => {
-                        indicator.classList.remove('show');
-                    }, 2000);
-                    
-                    updateStats();
-                }).catch((error) => {
-                    console.error('Ошибка сохранения данных:', error);
                 });
+                
+                const indicator = document.getElementById('auto-save-indicator');
+                indicator.classList.add('show');
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                }, 2000);
+                
+                updateStats();
+                return true;
+            } catch (e) {
+                console.error('Ошибка сохранения данных:', e);
+                return false;
             }
         }
         
         // Загрузка данных из Firebase
-        function loadFromFirebase(callback) {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                const userRef = firebase.database().ref('users/' + user.uid);
-                userRef.once('value').then((snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        employees = data.employees || [];
-                        tables = data.tables || [];
-                        schedule = data.schedule || {};
-                        employeeOrder = data.employeeOrder || employees.map(e => e.id);
-                        employeeColors = data.employeeColors || {};
-                        timeFlags = data.timeFlags || {};
-                    } else {
+        function loadFromFirebase() {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            const userRef = database.ref('users/' + user.uid);
+            userRef.once('value').then((snapshot) => {
+                const data = snapshot.val();
+                
+                if (data) {
+                    employees = data.employees || [];
+                    tables = data.tables || [];
+                    schedule = data.schedule || {};
+                    employeeOrder = data.employeeOrder || [];
+                    employeeColors = data.employeeColors || {};
+                    timeFlags = data.timeFlags || {};
+                    
+                    if (employees.length === 0 || tables.length === 0) {
                         createDemoData();
+                        saveToFirebase();
                     }
+                    
+                    if (!employeeOrder || employeeOrder.length === 0) {
+                        employeeOrder = employees.map(e => e.id);
+                    }
+                    
+                    if (!employeeColors) {
+                        employeeColors = {};
+                    }
+                    
+                    if (!timeFlags) {
+                        timeFlags = {};
+                    }
+                    
                     initializeSchedule();
-                    if (callback) callback();
-                }).catch((error) => {
-                    console.error('Ошибка загрузки данных:', error);
+                    renderSchedule();
+                    renderEmployeeList();
+                    renderTableList();
+                } else {
                     createDemoData();
-                    if (callback) callback();
-                });
-            } else {
-                window.location.href = "log.html";
-            }
+                    saveToFirebase();
+                }
+            }).catch((error) => {
+                console.error('Ошибка загрузки данных:', error);
+                createDemoData();
+            });
         }
         
         // Создание демо-данных
@@ -1056,35 +1296,6 @@
             
             linkElement.click();
             document.body.removeChild(linkElement);
-        }
-        
-        // Импорт данных
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    
-                    employees = data.employees || [];
-                    tables = data.tables || [];
-                    schedule = data.schedule || {};
-                    employeeOrder = data.employeeOrder || employees.map(e => e.id);
-                    employeeColors = data.employeeColors || {};
-                    timeFlags = data.timeFlags || {};
-                    
-                    initializeSchedule();
-                    renderSchedule();
-                    renderEmployeeList();
-                    renderTableList();
-                    saveToFirebase();
-                } catch (e) {
-                    console.error('Ошибка импорта данных:', e);
-                }
-            };
-            reader.readAsText(file);
         }
         
         // Сортировка сотрудников: активные сверху, неактивные снизу
@@ -1202,6 +1413,7 @@
                     
                     if (assignment && assignment.rest) {
                         td.textContent = '/';
+                        td.style.backgroundColor = 'rgba(0, 200, 83, 0.3)';
                         td.style.fontWeight = 'bold';
                     } else if (assignment && assignment.tableId) {
                         const tableObj = tables.find(t => t.id === assignment.tableId);
@@ -1324,7 +1536,7 @@
             
             const clearOption = document.createElement('div');
             clearOption.className = 'dropdown-item';
-            clearOption.style.color = '#ff8c00';
+            clearOption.style.color = '#ff9500';
             clearOption.innerHTML = '<i class="fas fa-times"></i> Очистить';
             clearOption.onclick = () => {
                 schedule[employeeId][timeIndex] = null;
@@ -1603,29 +1815,12 @@
             this.classList.remove('dragging');
         }
         
-        // Выход из системы
-        function logout() {
-            firebase.auth().signOut().then(() => {
-                window.location.href = "log.html";
-            });
-        }
-        
         // Инициализация приложения
         function initApp() {
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                    loadFromFirebase(() => {
-                        updateCurrentTime();
-                        setInterval(updateCurrentTime, 1000);
-                        renderSchedule();
-                        renderEmployeeList();
-                        renderTableList();
-                    });
-                } else {
-                    window.location.href = "log.html";
-                }
-            });
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
             
+            // Обработчики событий
             document.getElementById('add-employee').addEventListener('click', () => {
                 const nameInput = document.getElementById('employee-name');
                 const name = nameInput.value.trim();
@@ -1686,8 +1881,7 @@
                 document.getElementById('reset-modal').classList.remove('active');
             });
             
-            document.getElementById('logout-btn').addEventListener('click', logout);
-            
+            // Обработчики для выбора цвета
             document.querySelectorAll('.color-option').forEach(option => {
                 option.addEventListener('click', (e) => {
                     const color = e.target.dataset.color;
@@ -1715,23 +1909,156 @@
                 document.getElementById('color-palette').classList.remove('active');
             });
             
-            const importInput = document.createElement('input');
-            importInput.type = 'file';
-            importInput.accept = '.json';
-            importInput.style.display = 'none';
-            importInput.addEventListener('change', importData);
-            document.body.appendChild(importInput);
-            
-            const importButton = document.createElement('button');
-            importButton.className = 'btn';
-            importButton.innerHTML = '<i class="fas fa-file-import"></i> Импорт данных';
-            importButton.onclick = () => importInput.click();
-            document.querySelector('.btn-group').appendChild(importButton);
-            
+            // Обработчик для закрытия выпадающих меню
             document.addEventListener('click', closeDropdowns);
+            
+            // Кнопка выхода
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                auth.signOut();
+            });
         }
         
-        window.addEventListener('DOMContentLoaded', initApp);
+        // Обработчик состояния аутентификации
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('app-page').style.display = 'block';
+                loadFromFirebase();
+                initApp();
+            } else {
+                document.getElementById('login-page').style.display = 'block';
+                document.getElementById('app-page').style.display = 'none';
+            }
+        });
+        
+        // Обработка входа
+        document.addEventListener('DOMContentLoaded', function() {
+            const switchElement = document.getElementById('switch');
+            let isDragging = false;
+            let startX;
+            
+            switchElement.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                startX = e.clientX;
+                switchElement.style.cursor = 'grabbing';
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const trackRect = switchElement.getBoundingClientRect();
+                const thumb = switchElement.querySelector('.switch-thumb');
+                const fill = switchElement.querySelector('.switch-fill');
+                const text = switchElement.querySelector('.switch-text');
+                
+                let newLeft = e.clientX - trackRect.left - (thumb.offsetWidth / 2);
+                
+                newLeft = Math.max(5, Math.min(newLeft, trackRect.width - thumb.offsetWidth - 5));
+                
+                thumb.style.left = newLeft + 'px';
+                fill.style.width = (newLeft / trackRect.width * 100) + '%';
+                
+                if (newLeft > trackRect.width * 0.7) {
+                    switchElement.classList.add('swiped');
+                } else {
+                    switchElement.classList.remove('swiped');
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                switchElement.style.cursor = 'pointer';
+                
+                const trackRect = switchElement.getBoundingClientRect();
+                const thumb = switchElement.querySelector('.switch-thumb');
+                const fill = switchElement.querySelector('.switch-fill');
+                
+                if (parseInt(thumb.style.left) < trackRect.width * 0.7) {
+                    thumb.style.left = '5px';
+                    fill.style.width = '0';
+                    switchElement.classList.remove('swiped');
+                } else {
+                    thumb.style.left = (trackRect.width - thumb.offsetWidth - 5) + 'px';
+                    fill.style.width = '100%';
+                    switchElement.classList.add('swiped');
+                    
+                    // Авторизация через Firebase
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+                    
+                    auth.signInWithEmailAndPassword(email, password)
+                        .catch((error) => {
+                            console.error('Ошибка входа:', error);
+                            thumb.style.left = '5px';
+                            fill.style.width = '0';
+                            switchElement.classList.remove('swiped');
+                        });
+                }
+            });
+            
+            // Для мобильных устройств
+            switchElement.addEventListener('touchstart', function(e) {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+                
+                const trackRect = switchElement.getBoundingClientRect();
+                const thumb = switchElement.querySelector('.switch-thumb');
+                const fill = switchElement.querySelector('.switch-fill');
+                const text = switchElement.querySelector('.switch-text');
+                
+                let newLeft = e.touches[0].clientX - trackRect.left - (thumb.offsetWidth / 2);
+                newLeft = Math.max(5, Math.min(newLeft, trackRect.width - thumb.offsetWidth - 5));
+                
+                thumb.style.left = newLeft + 'px';
+                fill.style.width = (newLeft / trackRect.width * 100) + '%';
+                
+                if (newLeft > trackRect.width * 0.7) {
+                    switchElement.classList.add('swiped');
+                } else {
+                    switchElement.classList.remove('swiped');
+                }
+                
+                e.preventDefault();
+            });
+            
+            document.addEventListener('touchend', function() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                
+                const trackRect = switchElement.getBoundingClientRect();
+                const thumb = switchElement.querySelector('.switch-thumb');
+                const fill = switchElement.querySelector('.switch-fill');
+                
+                if (parseInt(thumb.style.left) < trackRect.width * 0.7) {
+                    thumb.style.left = '5px';
+                    fill.style.width = '0';
+                    switchElement.classList.remove('swiped');
+                } else {
+                    thumb.style.left = (trackRect.width - thumb.offsetWidth - 5) + 'px';
+                    fill.style.width = '100%';
+                    switchElement.classList.add('swiped');
+                    
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+                    
+                    auth.signInWithEmailAndPassword(email, password)
+                        .catch((error) => {
+                            console.error('Ошибка входа:', error);
+                            thumb.style.left = '5px';
+                            fill.style.width = '0';
+                            switchElement.classList.remove('swiped');
+                        });
+                }
+            });
+        });
     </script>
 </body>
 </html>
