@@ -439,6 +439,113 @@
             opacity: 0.8;
         }
         
+        /* Стили для комментариев */
+        .comments-card {
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 15px 20px;
+            flex: 1;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .comments-card h3 {
+            margin-top: 0;
+            color: #5a7d9a;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .comment-input-group {
+            display: flex;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+        
+        .comment-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #5a7d9a;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .add-comment-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            background: #ff9500;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            transition: background 0.3s;
+        }
+        
+        .add-comment-btn:hover {
+            background: #ffaa33;
+        }
+        
+        .comments-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .comment-item {
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+            position: relative;
+        }
+        
+        .comment-text {
+            margin: 0 0 8px 0;
+            color: #5a7d9a;
+            line-height: 1.4;
+        }
+        
+        .comment-date {
+            font-size: 0.75rem;
+            color: #8fa0b5;
+            margin: 0;
+        }
+        
+        .delete-comment {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #ff3b30;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.7), 
+                        2px 2px 4px rgba(174, 174, 192, 0.2);
+            transition: background 0.3s;
+        }
+        
+        .delete-comment:hover {
+            background: #ff6b60;
+        }
+        
         .auto-save-indicator {
             position: fixed;
             bottom: 20px;
@@ -851,6 +958,14 @@
                 right: 0;
                 margin-bottom: 20px;
             }
+            
+            .comment-input-group {
+                flex-direction: column;
+            }
+            
+            .add-comment-btn {
+                border-radius: 20px;
+            }
         }
     </style>
 </head>
@@ -929,7 +1044,7 @@
                 </table>
             </div>
             
-            <!-- Статистика -->
+            <!-- Статистика и комментарии -->
             <div class="stats-container">
                 <div class="stat-card">
                     <h3><i class="fas fa-users"></i> Активных сотрудников</h3>
@@ -943,10 +1058,15 @@
                     <div class="stat-label">Всего: <span id="total-tables-count">0</span></div>
                 </div>
                 
-                <div class="stat-card">
-                    <h3><i class="fas fa-database"></i> Состояние данных</h3>
-                    <div class="stat-value" id="last-save">-</div>
-                    <div class="stat-label">Автосохранение включено</div>
+                <div class="comments-card">
+                    <h3><i class="fas fa-comments"></i> Комментарии</h3>
+                    <div class="comment-input-group">
+                        <input type="text" class="comment-input" id="comment-input" placeholder="Введите ваш комментарий">
+                        <button class="add-comment-btn" id="add-comment-btn">Добавить</button>
+                    </div>
+                    <div class="comments-list" id="comments-list">
+                        <!-- Комментарии будут здесь -->
+                    </div>
                 </div>
             </div>
             
@@ -1054,6 +1174,7 @@
         let employeeOrder = [];
         let timeFlags = {};
         let employeeColors = {};
+        let comments = [];
         
         // Генерация временных интервалов
         const timeIntervals = generateTimeIntervals();
@@ -1127,8 +1248,6 @@
             
             document.getElementById('employee-badge').textContent = `${activeEmployees}/${totalEmployees}`;
             document.getElementById('table-badge').textContent = `${activeTables}/${totalTables}`;
-            
-            document.getElementById('last-save').textContent = new Date().toLocaleTimeString();
         }
         
         // Сохранение данных в Firebase
@@ -1145,6 +1264,7 @@
                     employeeOrder: employeeOrder,
                     employeeColors: employeeColors,
                     timeFlags: timeFlags,
+                    comments: comments,
                     lastSave: Date.now()
                 });
                 
@@ -1178,6 +1298,7 @@
                     employeeOrder = data.employeeOrder || [];
                     employeeColors = data.employeeColors || {};
                     timeFlags = data.timeFlags || {};
+                    comments = data.comments || [];
                     
                     if (employees.length === 0 || tables.length === 0) {
                         createDemoData();
@@ -1200,6 +1321,7 @@
                     renderSchedule();
                     renderEmployeeList();
                     renderTableList();
+                    renderComments();
                 } else {
                     createDemoData();
                     saveToFirebase();
@@ -1255,6 +1377,7 @@
             employeeOrder = employees.map(e => e.id);
             employeeColors = {};
             timeFlags = {};
+            comments = [];
         }
         
         // Сброс приложения к базовым настройкам
@@ -1269,6 +1392,7 @@
             renderSchedule();
             renderEmployeeList();
             renderTableList();
+            renderComments();
             document.getElementById('reset-modal').classList.remove('active');
         }
         
@@ -1281,6 +1405,7 @@
                 employeeOrder: employeeOrder,
                 employeeColors: employeeColors,
                 timeFlags: timeFlags,
+                comments: comments,
                 timestamp: Date.now()
             };
             
@@ -1680,6 +1805,78 @@
             updateStats();
         }
         
+        // Отрисовка комментариев
+        function renderComments() {
+            const commentsList = document.getElementById('comments-list');
+            commentsList.innerHTML = '';
+            
+            if (comments.length === 0) {
+                const emptyMessage = document.createElement('p');
+                emptyMessage.textContent = 'Пока нет комментариев';
+                emptyMessage.style.textAlign = 'center';
+                emptyMessage.style.color = '#8fa0b5';
+                emptyMessage.style.margin = '20px 0';
+                commentsList.appendChild(emptyMessage);
+                return;
+            }
+            
+            // Сортируем комментарии по дате (новые сверху)
+            comments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            comments.forEach((comment, index) => {
+                const commentItem = document.createElement('div');
+                commentItem.className = 'comment-item';
+                
+                const commentText = document.createElement('p');
+                commentText.className = 'comment-text';
+                commentText.textContent = comment.text;
+                
+                const commentDate = document.createElement('p');
+                commentDate.className = 'comment-date';
+                commentDate.textContent = new Date(comment.timestamp).toLocaleString('ru-RU');
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-comment';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.onclick = () => {
+                    deleteComment(index);
+                };
+                
+                commentItem.appendChild(commentText);
+                commentItem.appendChild(commentDate);
+                commentItem.appendChild(deleteBtn);
+                
+                commentsList.appendChild(commentItem);
+            });
+        }
+        
+        // Добавление комментария
+        function addComment() {
+            const commentInput = document.getElementById('comment-input');
+            const text = commentInput.value.trim();
+            
+            if (text) {
+                const newComment = {
+                    text: text,
+                    timestamp: Date.now()
+                };
+                
+                comments.push(newComment);
+                renderComments();
+                saveToFirebase();
+                
+                // Очищаем поле ввода
+                commentInput.value = '';
+            }
+        }
+        
+        // Удаление комментария
+        function deleteComment(index) {
+            comments.splice(index, 1);
+            renderComments();
+            saveToFirebase();
+        }
+        
         // Авторотация
         function autoRotation() {
             const now = new Date();
@@ -1769,8 +1966,8 @@
             
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "шифт_серия.csv");
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'шифт_серия.csv');
             document.body.appendChild(link);
             
             link.click();
@@ -1879,6 +2076,12 @@
             document.getElementById('confirm-reset').addEventListener('click', confirmReset);
             document.getElementById('cancel-reset').addEventListener('click', () => {
                 document.getElementById('reset-modal').classList.remove('active');
+            });
+            
+            // Обработчики для комментариев
+            document.getElementById('add-comment-btn').addEventListener('click', addComment);
+            document.getElementById('comment-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addComment();
             });
             
             // Обработчики для выбора цвета
