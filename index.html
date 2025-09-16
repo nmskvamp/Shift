@@ -1008,6 +1008,57 @@
                         inset 5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
+        /* Новые стили для поиска и удаления */
+        .search-container {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #5a7d9a;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .delete-employee-btn {
+            background: #ff3b30;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.7), 
+                        2px 2px 4px rgba(174, 174, 192, 0.2);
+            margin-right: 10px;
+        }
+        
+        .delete-employee-btn:hover {
+            background: #ff6b60;
+        }
+        
+        .user-email {
+            position: absolute;
+            top: 20px;
+            right: 180px;
+            color: #5a7d9a;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
         @media (max-width: 1200px) {
             .schedule-container {
                 padding: 10px;
@@ -1084,6 +1135,14 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            
+            .user-email {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 10px;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -1114,13 +1173,14 @@
 
     <!-- Основное приложение -->
     <div id="app-page">
+        <div class="user-email" id="user-email"></div>
         <button class="logout-btn" id="logout-btn">
             <i class="fas fa-sign-out-alt"></i> Выйти
         </button>
         
         <div class="container">
             <div class="header">
-                <h1>♠  ♦  Покерный клуб  ♥  ♣</h1>
+                <h1>♠   ♦   Покерный клуб   ♥   ♣</h1>
                 <div class="time-display" id="current-time"></div>
             </div>
             
@@ -1137,6 +1197,9 @@
                     </button>
                     <button class="btn btn-purple" id="backup-data">
                         <i class="fas fa-save"></i> Сохранить данные
+                    </button>
+                    <button class="btn btn-success" id="import-data">
+                        <i class="fas fa-file-import"></i> Импорт данных
                     </button>
                     <button class="btn btn-dark" id="reset-app">
                         <i class="fas fa-redo"></i> Полный сброс
@@ -1217,6 +1280,9 @@
                         Управление сотрудниками
                         <span class="count-badge" id="employee-badge">0/0</span>
                     </h2>
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="employee-search" placeholder="Поиск по ФИО...">
+                    </div>
                     <div class="input-group">
                         <input type="text" id="employee-name" placeholder="Введите ФИО сотрудника">
                         <button id="add-employee"><i class="fas fa-plus"></i> Добавить</button>
@@ -1273,9 +1339,13 @@
                 <div class="modal-content">
                     <h2><i class="fas fa-exclamation-triangle"></i> Очистка графика</h2>
                     <p>Вы уверены, что хотите очистить весь график? Все назначения будут удалены.</p>
+                    <p>Рекомендуем сначала сохранить данные, чтобы не потерять информацию.</p>
                     <div class="modal-buttons">
                         <button class="btn btn-danger" id="confirm-clear">
                             <i class="fas fa-broom"></i> Очистить
+                        </button>
+                        <button class="btn btn-success" id="save-first">
+                            <i class="fas fa-save"></i> Сохранить данные
                         </button>
                         <button class="btn btn-success" id="cancel-clear">
                             <i class="fas fa-times"></i> Отмена
@@ -1337,6 +1407,9 @@
                 <div class="color-option" data-color="#ff6e40" style="background-color: #ff6e40;"></div>
                 <button class="reset-color" id="reset-color">Сбросить цвет</button>
             </div>
+            
+            <!-- Скрытый input для импорта данных -->
+            <input type="file" id="import-file" accept=".json" style="display: none;">
         </div>
     </div>
 
@@ -1640,6 +1713,55 @@
             addLog('Экспорт данных');
         }
         
+        // Импорт данных
+        function importData() {
+            document.getElementById('import-file').click();
+        }
+        
+        // Обработка импорта данных
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Проверка структуры данных
+                    if (data.employees && data.tables && data.schedule) {
+                        employees = data.employees;
+                        tables = data.tables;
+                        schedule = data.schedule;
+                        employeeOrder = data.employeeOrder || employees.map(e => e.id);
+                        employeeColors = data.employeeColors || {};
+                        timeFlags = data.timeFlags || {};
+                        comments = data.comments || [];
+                        logs = data.logs || [];
+                        
+                        initializeSchedule();
+                        renderSchedule();
+                        renderEmployeeList();
+                        renderTableList();
+                        renderComments();
+                        saveToFirebase();
+                        
+                        addLog('Импорт данных из файла');
+                        alert('Данные успешно импортированы!');
+                    } else {
+                        alert('Неверный формат файла!');
+                    }
+                } catch (error) {
+                    console.error('Ошибка импорта данных:', error);
+                    alert('Ошибка при импорте данных!');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Сброс значения input для возможности повторной загрузки того же файла
+            event.target.value = '';
+        }
+        
         // Сортировка сотрудников: активные сверху, неактивные снизу
         function sortEmployees() {
             employees.sort((a, b) => {
@@ -1776,6 +1898,10 @@
                             td.textContent = 'Стол удалён';
                             td.style.opacity = '0.5';
                         }
+                    } else if (assignment && assignment.excluded) {
+                        td.textContent = '✖️';
+                        td.style.backgroundColor = 'rgba(255, 59, 48, 0.3)';
+                        td.style.fontWeight = 'bold';
                     } else {
                         td.textContent = '-';
                         td.style.opacity = '0.5';
@@ -1849,6 +1975,19 @@
                 addLog(`Назначение перерыва сотруднику ${getEmployeeName(employeeId)} на ${timeIntervals[timeIndex]}`);
             };
             dropdown.appendChild(restOption);
+            
+            const excludedOption = document.createElement('div');
+            excludedOption.className = 'dropdown-item';
+            excludedOption.style.color = '#ff3b30';
+            excludedOption.innerHTML = '<i class="fas fa-ban"></i> ✖️';
+            excludedOption.onclick = () => {
+                schedule[employeeId][timeIndex] = { excluded: true };
+                renderSchedule();
+                saveToFirebase();
+                document.getElementById('dropdown-container').innerHTML = '';
+                addLog(`Назначение исключения сотруднику ${getEmployeeName(employeeId)} на ${timeIntervals[timeIndex]}`);
+            };
+            dropdown.appendChild(excludedOption);
             
             const separator = document.createElement('div');
             separator.style.height = '1px';
@@ -1960,7 +2099,13 @@
             const listContainer = document.getElementById('employee-list');
             listContainer.innerHTML = '';
             
+            const searchText = document.getElementById('employee-search').value.toLowerCase();
+            
             employees.forEach(employee => {
+                if (searchText && !employee.name.toLowerCase().includes(searchText)) {
+                    return;
+                }
+                
                 const listItem = document.createElement('div');
                 listItem.className = 'list-item';
                 
@@ -1970,10 +2115,43 @@
                 span.appendChild(status);
                 span.appendChild(document.createTextNode(employee.name));
                 
-                const btn = document.createElement('button');
+                const buttonContainer = document.createElement('div');
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-employee-btn';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Удалить сотрудника ${employee.name}?`)) {
+                        // Удаляем сотрудника из всех массивов
+                        const index = employees.findIndex(e => e.id === employee.id);
+                        if (index !== -1) {
+                            employees.splice(index, 1);
+                        }
+                        
+                        // Удаляем из порядка сотрудников
+                        const orderIndex = employeeOrder.indexOf(employee.id);
+                        if (orderIndex !== -1) {
+                            employeeOrder.splice(orderIndex, 1);
+                        }
+                        
+                        // Удаляем из расписания
+                        delete schedule[employee.id];
+                        
+                        // Удаляем цвет сотрудника
+                        delete employeeColors[employee.id];
+                        
+                        renderEmployeeList();
+                        renderSchedule();
+                        saveToFirebase();
+                        addLog(`Удаление сотрудника: ${employee.name}`);
+                    }
+                };
+                
+                const pauseBtn = document.createElement('button');
                 if (employee.active) {
-                    btn.innerHTML = '<i class="fas fa-trash"></i> Пауза';
-                    btn.onclick = () => {
+                    pauseBtn.innerHTML = '<i class="fas fa-trash"></i> Пауза';
+                    pauseBtn.onclick = () => {
                         employee.active = false;
                         renderEmployeeList();
                         renderSchedule();
@@ -1981,8 +2159,8 @@
                         addLog(`Перевод сотрудника ${employee.name} в паузу`);
                     };
                 } else {
-                    btn.innerHTML = '<i class="fas fa-undo"></i> Восстановить';
-                    btn.onclick = () => {
+                    pauseBtn.innerHTML = '<i class="fas fa-undo"></i> Восстановить';
+                    pauseBtn.onclick = () => {
                         employee.active = true;
                         renderEmployeeList();
                         renderSchedule();
@@ -1991,8 +2169,11 @@
                     };
                 }
                 
+                buttonContainer.appendChild(deleteBtn);
+                buttonContainer.appendChild(pauseBtn);
+                
                 listItem.appendChild(span);
-                listItem.appendChild(btn);
+                listItem.appendChild(buttonContainer);
                 listContainer.appendChild(listItem);
             });
             
@@ -2196,6 +2377,9 @@
                 
                 const prev = prevAssignments[employee.id];
                 
+                // Пропускаем если предыдущее назначение - исключение
+                if (prev && prev.excluded) return;
+                
                 const availableForEmployee = [...availableTables];
                 if (prev && prev.tableId) {
                     const index = availableForEmployee.indexOf(prev.tableId);
@@ -2236,6 +2420,8 @@
                     } else if (assignment && assignment.tableId) {
                         const tableObj = tables.find(t => t.id === assignment.tableId);
                         row.push(tableObj ? tableObj.name : 'Стол удалён');
+                    } else if (assignment && assignment.excluded) {
+                        row.push('✖️');
                     } else {
                         row.push('-');
                     }
@@ -2390,10 +2576,14 @@
                 if (e.key === 'Enter') document.getElementById('add-table').click();
             });
             
+            // Поиск сотрудников
+            document.getElementById('employee-search').addEventListener('input', renderEmployeeList);
+            
             document.getElementById('auto-rotation').addEventListener('click', autoRotation);
             document.getElementById('save-excel').addEventListener('click', saveToExcel);
             document.getElementById('clear-schedule').addEventListener('click', clearSchedule);
             document.getElementById('backup-data').addEventListener('click', exportData);
+            document.getElementById('import-data').addEventListener('click', importData);
             document.getElementById('reset-app').addEventListener('click', resetToDefaults);
             document.getElementById('confirm-reset').addEventListener('click', confirmReset);
             document.getElementById('cancel-reset').addEventListener('click', () => {
@@ -2401,6 +2591,10 @@
             });
             
             document.getElementById('confirm-clear').addEventListener('click', confirmClearSchedule);
+            document.getElementById('save-first').addEventListener('click', () => {
+                exportData();
+                document.getElementById('confirm-clear-modal').classList.remove('active');
+            });
             document.getElementById('cancel-clear').addEventListener('click', () => {
                 document.getElementById('confirm-clear-modal').classList.remove('active');
             });
@@ -2480,6 +2674,9 @@
             document.getElementById('logout-btn').addEventListener('click', () => {
                 auth.signOut();
             });
+            
+            // Обработчик импорта данных
+            document.getElementById('import-file').addEventListener('change', handleImport);
         }
         
         // Обработчик состояния аутентификации
@@ -2487,6 +2684,7 @@
             if (user) {
                 document.getElementById('login-page').style.display = 'none';
                 document.getElementById('app-page').style.display = 'block';
+                document.getElementById('user-email').textContent = user.email;
                 loadFromFirebase();
                 initApp();
             } else {
@@ -2626,6 +2824,3 @@
     </script>
 </body>
 </html>
-
-
-
