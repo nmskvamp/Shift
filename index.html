@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>♦Покерный клуб</title>
+    <title>Шифт.Покерный клуб.Серия</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -2292,7 +2292,7 @@
                     };
                 } else {
                     toggleBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    toggleBtn.onclick = () {
+                    toggleBtn.onclick = () => {
                         table.active = true;
                         renderTableList();
                         renderSchedule();
@@ -2843,6 +2843,8 @@
             // Обработчик импорта данных
             document.getElementById('import-file').addEventListener('change', handleImport);
         }
+
+        // ==================== НОВЫЙ КОД АУТЕНТИФИКАЦИИ ====================
         
         // Обработчик состояния аутентификации
         auth.onAuthStateChanged((user) => {
@@ -2857,29 +2859,21 @@
                 document.getElementById('app-page').style.display = 'none';
             }
         });
-        
-        // Обработка входа
+
+        // Обработка переключателя входа
         document.addEventListener('DOMContentLoaded', function() {
             const switchElement = document.getElementById('switch');
             let isDragging = false;
             let startX;
+            let currentX;
             
-            switchElement.addEventListener('mousedown', function(e) {
-                isDragging = true;
-                startX = e.clientX;
-                switchElement.style.cursor = 'grabbing';
-            });
-            
-            document.addEventListener('mousemove', function(e) {
-                if (!isDragging) return;
-                
+            // Функция для обновления позиции переключателя
+            function updateSwitchPosition(x) {
                 const trackRect = switchElement.getBoundingClientRect();
                 const thumb = switchElement.querySelector('.switch-thumb');
                 const fill = switchElement.querySelector('.switch-fill');
-                const text = switchElement.querySelector('.switch-text');
                 
-                let newLeft = e.clientX - trackRect.left - (thumb.offsetWidth / 2);
-                
+                let newLeft = x - trackRect.left - (thumb.offsetWidth / 2);
                 newLeft = Math.max(5, Math.min(newLeft, trackRect.width - thumb.offsetWidth - 5));
                 
                 thumb.style.left = newLeft + 'px';
@@ -2890,103 +2884,126 @@
                 } else {
                     switchElement.classList.remove('swiped');
                 }
+            }
+            
+            // Функция для сброса переключателя
+            function resetSwitch() {
+                const thumb = switchElement.querySelector('.switch-thumb');
+                const fill = switchElement.querySelector('.switch-fill');
+                
+                thumb.style.left = '5px';
+                fill.style.width = '0';
+                switchElement.classList.remove('swiped');
+            }
+            
+            // Функция для завершения входа
+            function completeLogin() {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                if (!email || !password) {
+                    alert('Пожалуйста, введите email и пароль');
+                    resetSwitch();
+                    return;
+                }
+                
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Вход успешен
+                        console.log('Вход выполнен:', userCredential.user);
+                    })
+                    .catch((error) => {
+                        console.error('Ошибка входа:', error);
+                        let errorMessage = 'Ошибка входа: ';
+                        
+                        switch (error.code) {
+                            case 'auth/invalid-email':
+                                errorMessage += 'Неверный формат email';
+                                break;
+                            case 'auth/user-disabled':
+                                errorMessage += 'Пользователь отключен';
+                                break;
+                            case 'auth/user-not-found':
+                                errorMessage += 'Пользователь не найден';
+                                break;
+                            case 'auth/wrong-password':
+                                errorMessage += 'Неверный пароль';
+                                break;
+                            default:
+                                errorMessage += error.message;
+                        }
+                        
+                        alert(errorMessage);
+                        resetSwitch();
+                    });
+            }
+            
+            // Обработчики событий для мыши
+            switchElement.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                startX = e.clientX;
+                currentX = startX;
+                switchElement.style.cursor = 'grabbing';
+                updateSwitchPosition(currentX);
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                currentX = e.clientX;
+                updateSwitchPosition(currentX);
             });
             
             document.addEventListener('mouseup', function() {
                 if (!isDragging) return;
-                
                 isDragging = false;
                 switchElement.style.cursor = 'pointer';
                 
                 const trackRect = switchElement.getBoundingClientRect();
                 const thumb = switchElement.querySelector('.switch-thumb');
-                const fill = switchElement.querySelector('.switch-fill');
                 
-                if (parseInt(thumb.style.left) < trackRect.width * 0.7) {
-                    thumb.style.left = '5px';
-                    fill.style.width = '0';
-                    switchElement.classList.remove('swiped');
+                if (parseInt(thumb.style.left) > trackRect.width * 0.7) {
+                    completeLogin();
                 } else {
-                    thumb.style.left = (trackRect.width - thumb.offsetWidth - 5) + 'px';
-                    fill.style.width = '100%';
-                    switchElement.classList.add('swiped');
-                    
-                    // Авторизация через Firebase
-                    const email = document.getElementById('login-email').value;
-                    const password = document.getElementById('login-password').value;
-                    
-                    auth.signInWithEmailAndPassword(email, password)
-                        .catch((error) => {
-                            console.error('Ошибка входа:', error);
-                            thumb.style.left = '5px';
-                            fill.style.width = '0';
-                            switchElement.classList.remove('swiped');
-                        });
+                    resetSwitch();
                 }
             });
             
-            // Для мобильных устройств
+            // Обработчики событий для touch-устройств
             switchElement.addEventListener('touchstart', function(e) {
                 isDragging = true;
                 startX = e.touches[0].clientX;
+                currentX = startX;
+                updateSwitchPosition(currentX);
                 e.preventDefault();
             });
             
             document.addEventListener('touchmove', function(e) {
                 if (!isDragging) return;
-                
-                const trackRect = switchElement.getBoundingClientRect();
-                const thumb = switchElement.querySelector('.switch-thumb');
-                const fill = switchElement.querySelector('.switch-fill');
-                const text = switchElement.querySelector('.switch-text');
-                
-                let newLeft = e.touches[0].clientX - trackRect.left - (thumb.offsetWidth / 2);
-                newLeft = Math.max(5, Math.min(newLeft, trackRect.width - thumb.offsetWidth - 5));
-                
-                thumb.style.left = newLeft + 'px';
-                fill.style.width = (newLeft / trackRect.width * 100) + '%';
-                
-                if (newLeft > trackRect.width * 0.7) {
-                    switchElement.classList.add('swiped');
-                } else {
-                    switchElement.classList.remove('swiped');
-                }
-                
+                currentX = e.touches[0].clientX;
+                updateSwitchPosition(currentX);
                 e.preventDefault();
             });
             
             document.addEventListener('touchend', function() {
                 if (!isDragging) return;
-                
                 isDragging = false;
                 
                 const trackRect = switchElement.getBoundingClientRect();
                 const thumb = switchElement.querySelector('.switch-thumb');
-                const fill = switchElement.querySelector('.switch-fill');
                 
-                if (parseInt(thumb.style.left) < trackRect.width * 0.7) {
-                    thumb.style.left = '5px';
-                    fill.style.width = '0';
-                    switchElement.classList.remove('swiped');
+                if (parseInt(thumb.style.left) > trackRect.width * 0.7) {
+                    completeLogin();
                 } else {
-                    thumb.style.left = (trackRect.width - thumb.offsetWidth - 5) + 'px';
-                    fill.style.width = '100%';
-                    switchElement.classList.add('swiped');
-                    
-                    const email = document.getElementById('login-email').value;
-                    const password = document.getElementById('login-password').value;
-                    
-                    auth.signInWithEmailAndPassword(email, password)
-                        .catch((error) => {
-                            console.error('Ошибка входа:', error);
-                            thumb.style.left = '5px';
-                            fill.style.width = '0';
-                            switchElement.classList.remove('swiped');
-                        });
+                    resetSwitch();
                 }
+            });
+            
+            // Обработчик для вопроса (подсказки)
+            document.querySelector('.question-mark').addEventListener('click', function() {
+                alert('Для входа введите ваш email и пароль, затем сдвиньте переключатель вправо.');
             });
         });
     </script>
 </body>
 </html>
-
