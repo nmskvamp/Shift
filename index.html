@@ -1058,31 +1058,7 @@
             box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
                         inset 5px 5px 10px rgba(174, 174, 192, 0.2);
         }
-              /* Новые стили для поиска и удаления */
-        .search-container {
-            margin-bottom: 15px;
-            position: relative;
-        }
         
-        .search-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 20px;
-            background: #e6e9ef;
-            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
-                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
-            color: #5a7d9a;
-            font-size: 14px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        
-        .search-input:focus {
-            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
-                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
-        }
-          
         .user-email {
             position: absolute;
             top: 20px;
@@ -1315,15 +1291,12 @@
             <div class="management-section">
                 <div class="management-card">
                     <button class="delete-all-btn" id="delete-all-employees">
-                        <i class="fas fa-trash"></i> ❓
+                        <i class="fas fa-trash"></i> Удалить всех
                     </button>
                     <h2>
                         Управление сотрудниками
                         <span class="count-badge" id="employee-badge">0/0</span>
                     </h2>
-                    <div class="search-container">
-                        <input type="text" class="search-input" id="employee-search" placeholder="Поиск по ФИО...">
-                    </div>
                     <div class="input-group">
                         <input type="text" id="employee-name" placeholder="Введите ФИО сотрудника">
                         <button id="add-employee"><i class="fas fa-plus"></i> Добавить</button>
@@ -2167,13 +2140,6 @@
             
             const listContainer = document.getElementById('employee-list');
             listContainer.innerHTML = '';
-                       
-            const searchText = document.getElementById('employee-search').value.toLowerCase();
-            
-            employees.forEach(employee => {
-                if (searchText && !employee.name.toLowerCase().includes(searchText)) {
-                    return;
-                }
             
             employees.forEach(employee => {
                 const listItem = document.createElement('div');
@@ -2277,7 +2243,7 @@
         
         // Удаление всех сотрудников
         function deleteAllEmployees() {
-            if (confirm('❓ сотрудников? Это действие нельзя отменить.')) {
+            if (confirm('Удалить всех сотрудников? Это действие нельзя отменить.')) {
                 employees = [];
                 employeeOrder = [];
                 schedule = {};
@@ -2773,9 +2739,6 @@
             document.getElementById('table-name').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') document.getElementById('add-table').click();
             });
-                        
-            // Поиск сотрудников
-            document.getElementById('employee-search').addEventListener('input', renderEmployeeList);
             
             document.getElementById('auto-rotation').addEventListener('click', autoRotation);
             document.getElementById('save-excel').addEventListener('click', saveToExcel);
