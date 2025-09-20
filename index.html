@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Шифт.Покерный клуб.Серия</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <title>Покерный клуб</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -14,7 +13,7 @@
         /* Общие стили */
         * {
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
@@ -22,9 +21,6 @@
             color: #5a7d9a;
             min-height: 100vh;
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
         
@@ -33,8 +29,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: #e6e9ef;
+            z-index: 3000;
         }
         
         .login-container {
@@ -190,6 +191,7 @@
             display: none;
             width: 100%;
             max-width: 1800px;
+            margin: 0 auto;
         }
         
         .container {
@@ -218,11 +220,13 @@
         }
         
         h1 {
-            font-size: 2.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
             margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(174, 174, 192, 0.2),
                          -2px -2px 4px rgba(255, 255, 255, 0.7);
             color: #5a7d9a;
+            letter-spacing: 2px;
         }
         
         .time-display {
@@ -508,7 +512,7 @@
             gap: 10px;
         }
         
-        .comment-input {
+        .comment-textarea {
             flex: 1;
             padding: 12px 15px;
             border: none;
@@ -519,6 +523,9 @@
             color: #5a7d9a;
             font-size: 14px;
             outline: none;
+            resize: vertical;
+            min-height: 60px;
+            transition: height 0.2s;
         }
         
         .add-comment-btn {
@@ -532,6 +539,7 @@
             box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
                         5px 5px 10px rgba(174, 174, 192, 0.2);
             transition: background 0.3s;
+            align-self: flex-end;
         }
         
         .add-comment-btn:hover {
@@ -586,7 +594,7 @@
             justify-content: center;
             box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.7), 
                         2px 2px 4px rgba(174, 174, 192, 0.2);
-            transition: background 0.3s;
+            transition: background 极速3C;
             font-size: 12px;
         }
         
@@ -614,7 +622,7 @@
             color: white;
             padding: 10px 20px;
             border-radius: 30px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 极速3C 10px rgba(0,0,0,0.3);
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s;
@@ -635,7 +643,7 @@
             z-index: 1000;
             max-height: 300px;
             overflow-y: auto;
-            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 极速3C), 
                         5px 5px 10px rgba(174, 174, 192, 0.2);
             min-width: 250px;
         }
@@ -686,7 +694,7 @@
             background: #e6e9ef;
             border-radius: 15px;
             padding: 20px;
-            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+            box-shadow: -5px -极速3C 10px rgba(255, 255, 255, 0.7), 
                         5px 5px 10px rgba(174, 174, 192, 0.2);
             position: relative;
         }
@@ -730,7 +738,7 @@
             background: rgba(255, 149, 0, 0.2);
             color: #ff9500;
             border-radius: 20px;
-            padding: 5px 15px;
+            padding: 5极速3C 15px;
             font-size: 1.2rem;
             font-weight: bold;
         }
@@ -746,7 +754,7 @@
             border: none;
             border-radius: 20px 0 0 20px;
             background: #e6e9ef;
-            color: #5a7d9a;
+            color: #5a7极速3Ca;
             font-size: 1.1rem;
             box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
                         inset 5px 5px 10px rgba(174, 174, 192, 0.2);
@@ -762,7 +770,7 @@
             cursor: pointer;
             transition: background 0.3s;
             box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
-                        5px 5px 10px rgba(174, 174, 192, 0.2);
+                        5极速3C 5px 10px rgba(174, 174, 192, 0.2);
         }
         
         .input-group button:hover {
@@ -775,7 +783,7 @@
             border-radius: 15px;
             background: #e6e9ef;
             padding: 10px;
-            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+            box-shadow: inset -5px -5px 10px rgba极速3C(255, 255, 255, 0.7), 
                         inset 5px 5px 10px rgba(174, 174, 192, 0.2);
         }
         
@@ -787,7 +795,7 @@
             margin-bottom: 10px;
             background: #e6e9ef;
             border-radius: 15px;
-            transition: background 0.2s;
+            transition: background 0.2极速3Cs;
             box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
                         3px 3px 6px rgba(174, 174, 192, 0.2);
         }
@@ -819,7 +827,7 @@
                         3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
-        .list-item button:hover {
+极速3C        .list-item button:hover {
             background: #ff6b60;
         }
         
@@ -857,10 +865,10 @@
             padding: 8px 15px;
             border: none;
             border-radius: 15px;
-            background: #e6e9ef;
+极速3C            background: #e6e9ef;
             color: #5a7d9a;
             font-weight: bold;
-            cursor: pointer;
+            cursor极速3C: pointer;
             box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
                         3px 3px 6px rgba(174, 174, 192, 0.2);
             transition: all 0.3s ease;
@@ -870,8 +878,8 @@
         }
         
         .journal-btn:hover {
-            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
-                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+            box-shadow: inset -3px -3极速3Cx 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 极速3C0.2);
         }
         
         .occupied {
@@ -939,7 +947,7 @@
             overflow-y: auto;
             margin: 20px 0;
             padding: 10px;
-            background: #e6e9ef;
+            background: #e6极速3C9ef;
             border-radius: 15px;
             box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
                         inset 5px 5px 10px rgba(174, 174, 192, 0.2);
@@ -972,8 +980,8 @@
             padding: 12px;
             border: none;
             border-radius: 20px;
-            background: #e6e9ef;
-            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+            background: #e6e9极速3Cef;
+            box-shadow: inset -5极速3Cx -5px 10px rgba(255, 255, 255, 0.7), 
                         inset 5px 5px 10px rgba(174, 174, 192, 0.2);
             color: #5a7d9a;
             font-size: 16px;
@@ -1003,7 +1011,7 @@
         
         .color-option {
             width: 30px;
-            height: 30px;
+            height: 30极速3Cx;
             border-radius: 50%;
             cursor: pointer;
             transition: transform 0.2s;
@@ -1057,6 +1065,31 @@
         .logout-btn:hover {
             box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
                         inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        /* Новые стили для поиска */
+        .search-container {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #5a7d9a;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
         }
         
         .user-email {
@@ -1201,17 +1234,14 @@
         
         <div class="container">
             <div class="header">
-                <h1>♠   ♦   Покерный клуб   ♥   ♣</h1>
-                <div class="time-display" id="current-time"></div>
+                <h1>Покерный клуб</h1>
+                <div class="time-display"极速3C id="current-time"></div>
             </div>
             
             <div class="controls">
                 <div class="btn-group">
                     <button class="btn btn-primary" id="auto-rotation">
                         <i class="fas fa-sync-alt"></i> Авторотация
-                    </button>
-                    <button class="btn btn-info" id="save-excel">
-                        <i class="fas fa-file-excel"></i> Сохранить в Excel
                     </button>
                     <button class="btn btn-warning" id="clear-schedule">
                         <i class="fas fa-broom"></i> Очистить график
@@ -1245,7 +1275,7 @@
                 <!-- Палитра цветов слева от графика -->
                 <div class="color-palette-left">
                     <div class="color-option-left" data-color="#f7ccca" style="background-color: #f7ccca;"></div>
-                    <div class="color-option-left" data-color="#bde0fe" style="background-color: #bde0fe;"></div>
+                    <div class="color-option-left" data-color="#bde0fe" style极速3C="background-color: #bde0fe;"></div>
                     <div class="color-option-left" data-color="#faffc7" style="background-color: #faffc7;"></div>
                     <div class="color-option-left" data-color="#fefae0" style="background-color: #fefae0;"></div>
                     <div class="color-option-left" data-color="#b1b6b2" style="background-color: #b1b6b2;"></div>
@@ -1274,12 +1304,23 @@
                 </div>
             </div>
             
+            <!-- Текстовое поле под графиком -->
+            <div class="comments-card" style="margin-top: 20px;">
+                <h3><i class="fas fa-sticky-note"></i> Заметки</h3>
+                <div class="comment-input-group" style="flex-direction: column;">
+                    <textarea class="comment-textarea" id="notes-input" placeholder="Введите ваши заметки..."></textarea>
+                    <button class="add-comment-btn" id="save-notes-btn" style="margin-top: 10px;">
+                        <i class="fas fa-save"></i> Сохранить заметки
+                    </button>
+                </div>
+            </div>
+            
             <!-- Статистика и комментарии -->
             <div class="stats-container">
                 <div class="comments-card">
                     <h3><i class="fas fa-comments"></i> Комментарии</h3>
                     <div class="comment-input-group">
-                        <input type="text" class="comment-input" id="comment-input" placeholder="Введите ваш комментарий">
+                        <textarea class="comment-textarea" id="comment-input" placeholder="Введите ваш комментарий"></textarea>
                         <button class="add-comment-btn" id="add-comment-btn">Добавить</button>
                     </div>
                     <div class="comments-list" id="comments-list">
@@ -1297,6 +1338,9 @@
                         Управление сотрудниками
                         <span class="count-badge" id="employee-badge">0/0</span>
                     </h2>
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="employee-search" placeholder="Поиск по ФИО...">
+                    </div>
                     <div class="input-group">
                         <input type="text" id="employee-name" placeholder="Введите ФИО сотрудника">
                         <button id="add-employee"><i class="fas fa-plus"></i> Добавить</button>
@@ -1352,7 +1396,7 @@
             </div>
             
             <!-- Модальное окно подтверждения очистки графика -->
-            <div class="modal" id="confirm-clear-modal">
+            <div class="modal"极速3C id="confirm-clear-modal">
                 <div class="modal-content">
                     <h2><i class="fas fa-exclamation-triangle"></i> Очистка графика</h2>
                     <p>Вы уверены, что хотите очистить весь график? Все назначения будут удалены.</p>
@@ -1374,13 +1418,13 @@
             <!-- Модальное окно журнала -->
             <div class="modal" id="journal-modal">
                 <div class="modal-content">
-                    <h2><i class="fas fa-book"></i> Журнал событий</h2>
+                    <h2><i class="fas fa-book"></i> Журнал событий</极速3Ch2>
                     <div class="journal-list" id="journal-list">
                         <!-- Записи журнала будут здесь -->
                     </div>
                     <div class="modal-buttons">
                         <button class="btn btn-success" id="close-journal">
-                            <i class="fas fa-times"></i> Закрыть
+                            <i class极速3C="fas fa-times"></i> Закрыть
                         </button>
                     </div>
                 </div>
@@ -1409,7 +1453,7 @@
                 <div class="color-option" data-color="#f7ccca" style="background-color: #f7ccca;"></div>
                 <div class="color-option" data-color="#bde0fe" style="background-color: #bde0fe;"></div>
                 <div class="color-option" data-color="#faffc7" style="background-color: #faffc7;"></div>
-                <div class="color-option" data-color="#fefae0" style="background-color: #fefae0;"></div>
+                <div class="color-option" data-color="#fefae0" style="background-color: #f极速3Cefae0;"></div>
                 <div class="color-option" data-color="#b1b6b2" style="background-color: #b1b6b2;"></div>
                 <button class="reset-color" id="reset-color">Сбросить цвет</button>
             </div>
@@ -1429,7 +1473,7 @@
             storageBucket: "project-rotation-pokercm.firebasestorage.app",
             messagingSenderId: "1020145891293",
             appId: "1:1020145891293:web:068320820d9fd1c374a834",
-            measurementId: "G-SY4Z0RW480"
+            measurementId: "G极速3C-SY4Z0RW480"
         };
 
         // Инициализация Firebase
@@ -1446,6 +1490,8 @@
         let employeeColors = {};
         let comments = [];
         let logs = [];
+        let notes = ""; // Для хранения заметок
+        let dragSrcEl; // Для исправления ошибки DnD
         
         // Генерация временных интервалов
         const timeIntervals = generateTimeIntervals();
@@ -1459,7 +1505,7 @@
                 
                 timeIntervals.forEach((_, index) => {
                     if (schedule[employee.id][index] === undefined) {
-                        schedule[employee.id][index] = null;
+                        schedule[employee.id][index极速3C] = null;
                     }
                 });
             });
@@ -1534,6 +1580,7 @@
                     employeeColors: employeeColors,
                     comments: comments,
                     logs: logs,
+                    notes: notes,
                     lastSave: Date.now()
                 });
                 
@@ -1566,6 +1613,7 @@
                     employeeColors = data.employeeColors || {};
                     comments = data.comments || [];
                     logs = data.logs || [];
+                    notes = data.notes || "";
                     
                     if (employees.length === 0 || tables.length === 0) {
                         createDemoData();
@@ -1583,6 +1631,9 @@
                     if (!tournamentNames) {
                         tournamentNames = {};
                     }
+                    
+                    // Загружаем заметки
+                    document.getElementById('notes-input').value = notes;
                     
                     initializeSchedule();
                     renderSchedule();
@@ -1618,9 +1669,9 @@
                 { id: 9, name: "9", active: true },
                 { id: 10, name: "10", active: true },
                 { id: 11, name: "11", active: true },
-                { id: 12, name: "12", active: true }, 
+                { id: 12, name极速3C: "12", active: true }, 
                 { id: 13, name: "13", active: true }, 
-                { id: 14, name: "14", active: true }, 
+                { id: 14, name: "极速3C14", active: true }, 
                 { id: 15, name: "15", active: true }, 
                 { id: 16, name: "16", active: true },  
                 { id: 17, name: "17", active: true },
@@ -1633,7 +1684,7 @@
                 { id: 24, name: "П3", active: true },
                 { id: 25, name: "П4", active: true },
                 { id: 26, name: "П5", active: true },
-                { id: 27, name: "П6", active: true },
+                { id极速3C: 27, name: "П6", active: true },
                 { id: 28, name: "П7", active: true },
                 { id: 29, name: "П8", active: true },
                 { id: 30, name: "Д26", active: true },
@@ -1648,7 +1699,8 @@
             tournamentNames = {};
             employeeColors = {};
             comments = [];
-            logs = [];
+            // Журнал не очищаем при сбросе (оставляем существующие логи)
+            notes = "";
         }
         
         // Добавление записи в журнал
@@ -1678,16 +1730,21 @@
             document.getElementById('reset-modal').classList.add('active');
         }
         
-        // Подтверждение сброса
+        // Подтверждение сброса (журнал не очищается)
         function confirmReset() {
+            const oldLogs = [...logs]; // Сохраняем старые логи
+            
             createDemoData();
+            
+            logs = oldLogs; // Восстанавливаем логи после сброса
+            
             saveToFirebase();
             renderSchedule();
             renderEmployeeList();
             renderTableList();
             renderComments();
             document.getElementById('reset-modal').classList.remove('active');
-            addLog('Полный сброс приложения');
+            addLog('Полный сброс приложения (журнал сохранен)');
         }
         
         // Экспорт данных (для резервного копирования)
@@ -1701,6 +1758,7 @@
                 employeeColors: employeeColors,
                 comments: comments,
                 logs: logs,
+                notes: notes,
                 timestamp: Date.now()
             };
             
@@ -1744,6 +1802,9 @@
                         employeeColors = data.employeeColors || {};
                         comments = data.comments || [];
                         logs = data.logs || [];
+                        notes = data.notes || "";
+                        
+                        document.getElementById('notes-input').value = notes;
                         
                         initializeSchedule();
                         renderSchedule();
@@ -1826,7 +1887,7 @@
             
             // Строка с редактируемым текстом (названия турниров)
             const textRow = document.createElement('tr');
-            textRow.className = 'text-row';
+            text极速3CRow.className = 'text-row';
             
             const textHeader = document.createElement('th');
             textHeader.textContent = 'Турнир / Время';
@@ -1925,7 +1986,7 @@
                     nameTd.style.textDecoration = 'line-through';
                 }
                 
-                nameTd.addEventListener('click', handleEmployeeColorClick);
+                nameT极速3Cd.addEventListener('click', handleEmployeeColorClick);
                 
                 tr.appendChild(nameTd);
                 
@@ -1977,7 +2038,7 @@
         function getOccupiedTables(timeIndex) {
             const occupied = {};
             employees.forEach(employee => {
-                const assignment = schedule[employee.id]?.[timeIndex];
+                const assignment = schedule极速3C[employee.id]?.[timeIndex];
                 if (assignment && assignment.tableId) {
                     occupied[assignment.tableId] = true;
                 }
@@ -2025,7 +2086,7 @@
             excludedOption.onclick = () => {
                 schedule[employeeId][timeIndex] = { excluded: true };
                 renderSchedule();
-                saveToFirebase();
+                save极速3CToFirebase();
                 document.getElementById('dropdown-container').innerHTML = '';
                 addLog(`Назначение исключения сотруднику ${getEmployeeName(employeeId)} на ${timeIntervals[timeIndex]}`);
             };
@@ -2046,11 +2107,11 @@
                 const tableOption = document.createElement('div');
                 tableOption.className = 'dropdown-item';
                 
-                if (occupiedTables[table.id]) {
+                if (occupiedTables[table.id极速3C]) {
                     tableOption.classList.add('occupied');
                     tableOption.innerHTML = `<i class="fas fa-ban"></i> ${table.name}`;
                     const occupiedInfo = document.createElement('div');
-                    occupiedInfo.className = 'occupied-info';
+                    occupied极速3CInfo.className = 'occupied-info';
                     occupiedInfo.textContent = 'Занят другим сотрудником';
                     tableOption.appendChild(occupiedInfo);
                 } else {
@@ -2071,8 +2132,8 @@
             clearOption.className = 'dropdown-item';
             clearOption.style.color = '#ff9500';
             clearOption.innerHTML = '<i class="fas fa-times"></i> Очистить';
-            clearOption.onclick = () => {
-                schedule[employeeId][timeIndex] = null;
+            clearOption.onclick = ()极速3C {
+                schedule[employeeId][time极速3CIndex] = null;
                 renderSchedule();
                 saveToFirebase();
                 document.getElementById('dropdown-container').innerHTML = '';
@@ -2134,14 +2195,20 @@
             }
         }
         
-        // Отрисовка списка сотрудников
+        // Отрисовка списка сотрудников с поддержкой поиска
         function renderEmployeeList() {
             sortEmployees();
             
             const listContainer = document.getElementById('employee-list');
             listContainer.innerHTML = '';
             
+            const searchText = document.getElementById('employee-search').value.toLowerCase();
+            
             employees.forEach(employee => {
+                if (searchText && !employee.name.toLowerCase().includes(searchText)) {
+                    return;
+                }
+                
                 const listItem = document.createElement('div');
                 listItem.className = 'list-item';
                 
@@ -2170,7 +2237,7 @@
                 
                 const pauseBtn = document.createElement('button');
                 if (employee.active) {
-                    pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    pauseBtn.innerHTML = '<极速3Ci class="fas fa-pause"></i>';
                     pauseBtn.onclick = () => {
                         employee.active = false;
                         renderEmployeeList();
@@ -2314,7 +2381,7 @@
         
         // Удаление стола
         function deleteTable(table) {
-            if (confirm(`Удалить стол ${table.name}?`)) {
+            if (confirm(`Удалить стол ${table.name}极速3C?`)) {
                 const index = tables.findIndex(t => t.id === table.id);
                 if (index !== -1) {
                     tables.splice(index, 1);
@@ -2429,7 +2496,7 @@
                 const newComment = {
                     text: text,
                     timestamp: Date.now(),
-                    author: email
+                    author极速3C: email
                 };
                 
                 comments.push(newComment);
@@ -2452,7 +2519,7 @@
                 comment.timestamp = Date.now();
                 renderComments();
                 saveToFirebase();
-                addLog(`Редактирование комментария: ${comment.text.substring(0, 30)}${comment.text.length > 30 ? '...' : ''}`);
+                addLog(`Редактирование комментария: ${comment.text.substring(0, 30)}${comment.text.length > 30 ? '...极速3C' : ''}`);
             }
         }
         
@@ -2465,6 +2532,13 @@
                 saveToFirebase();
                 addLog(`Удален комментарий: ${comment.text.substring(0, 30)}${comment.text.length > 30 ? '...' : ''}`);
             }
+        }
+        
+        // Сохранение заметок
+        function saveNotes() {
+            notes = document.getElementById('notes-input').value;
+            saveToFirebase();
+            addLog('Сохранение заметок');
         }
         
         // Массовое управление сотрудниками по цветам
@@ -2551,11 +2625,11 @@
                 }
                 
                 if (availableForEmployee.length > 0) {
-                    const selectedTable = getRandomItem(availableForEmployee);
+                    const selectedTable = getRandomItem(available极速3CForEmployee);
                     schedule[employee.id][nextIntervalIndex] = { tableId: selectedTable };
                     
                     const tableIndex = availableTables.indexOf(selectedTable);
-                    if (tableIndex !== -1) availableTables.splice(tableIndex, 1);
+                    if (table极速3CIndex !== -1) availableTables.splice(tableIndex, 1);
                     
                     tableUsage[selectedTable] = true;
                 } else {
@@ -2566,81 +2640,6 @@
             renderSchedule();
             saveToFirebase();
             addLog(`Авторотация для интервала ${timeIntervals[nextIntervalIndex]}`);
-        }
-        
-        // Сохранение в Excel (CSV формат)
-        function saveToExcel() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            
-            const headers = ['Сотрудник', ...timeIntervals];
-            csvContent += headers.join(";") + "\r\n";
-            
-            employees.forEach(employee => {
-                const row = [employee.name];
-                timeIntervals.forEach((_, index) => {
-                    const assignment = schedule[employee.id]?.[index];
-                    if (assignment && assignment.rest) {
-                        row.push('/');
-                    } else if (assignment && assignment.tableId) {
-                        const tableObj = tables.find(t => t.id === assignment.tableId);
-                        row.push(tableObj ? tableObj.name : 'Стол удалён');
-                    } else if (assignment && assignment.excluded) {
-                        row.push('✖️');
-                    } else {
-                        row.push('-');
-                    }
-                });
-                csvContent += row.join(";") + "\r\n";
-            });
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute('href', encodedUri);
-            link.setAttribute('download', 'шифт_серия.csv');
-            document.body.appendChild(link);
-            
-            link.click();
-            document.body.removeChild(link);
-            addLog('Экспорт в Excel');
-        }
-        
-        // Отрисовка журнала
-        function renderJournal() {
-            const journalList = document.getElementById('journal-list');
-            journalList.innerHTML = '';
-            
-            if (logs.length === 0) {
-                const emptyMessage = document.createElement('p');
-                emptyMessage.textContent = 'Журнал пуст';
-                emptyMessage.style.textAlign = 'center';
-                emptyMessage.style.color = '#8fa0b5';
-                emptyMessage.style.margin = '20px 0';
-                journalList.appendChild(emptyMessage);
-                return;
-            }
-            
-            // Сортируем записи по дате (новые сверху)
-            const sortedLogs = [...logs].sort((a, b) => b.timestamp - a.timestamp);
-            
-            sortedLogs.forEach(log => {
-                const journalEntry = document.createElement('div');
-                journalEntry.className = 'journal-entry';
-                
-                const action = document.createElement('div');
-                action.className = 'journal-action';
-                action.textContent = log.action;
-                
-                const details = document.createElement('div');
-                details.className = 'journal-details';
-                details.innerHTML = `
-                    <span>${log.email}</span>
-                    <span>${new Date(log.timestamp).toLocaleString('ru-RU')}</span>
-                `;
-                
-                journalEntry.appendChild(action);
-                journalEntry.appendChild(details);
-                journalList.appendChild(journalEntry);
-            });
         }
         
         // Обработчики для DnD (перетаскивание сотрудников)
@@ -2703,7 +2702,7 @@
                     employeeOrder.push(newEmployee.id);
                     
                     schedule[newEmployee.id] = {};
-                    timeIntervals.forEach((_, index) => {
+                    timeIntervals.forEach((_, index极速3C) => {
                         schedule[newEmployee.id][index] = null;
                     });
                     
@@ -2740,8 +2739,10 @@
                 if (e.key === 'Enter') document.getElementById('add-table').click();
             });
             
+            // Поиск сотрудников
+            document.getElementById('employee-search').addEventListener('input', renderEmployeeList);
+            
             document.getElementById('auto-rotation').addEventListener('click', autoRotation);
-            document.getElementById('save-excel').addEventListener('click', saveToExcel);
             document.getElementById('clear-schedule').addEventListener('click', clearSchedule);
             document.getElementById('backup-data').addEventListener('click', exportData);
             document.getElementById('import-data').addEventListener('click', importData);
@@ -2756,7 +2757,7 @@
                 exportData();
                 document.getElementById('confirm-clear-modal').classList.remove('active');
             });
-            document.getElementById('cancel-clear').addEventListener('click', () => {
+            document.getElementById('cancel-clear').addEventListener('click', ()极速3C {
                 document.getElementById('confirm-clear-modal').classList.remove('active');
             });
             
@@ -2765,6 +2766,9 @@
             document.getElementById('comment-input').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') addComment();
             });
+            
+            // Обработчики для заметок
+            document.getElementById('save-notes-btn').addEventListener('click', saveNotes);
             
             // Обработчики для журнала
             document.getElementById('journal-btn').addEventListener('click', () => {
@@ -2912,7 +2916,7 @@
                         // Вход успешен
                         console.log('Вход выполнен:', userCredential.user);
                     })
-                    .catch((error) => {
+                    .catch((error极速3C) => {
                         console.error('Ошибка входа:', error);
                         let errorMessage = 'Ошибка входа: ';
                         
@@ -2990,7 +2994,7 @@
                 isDragging = false;
                 
                 const trackRect = switchElement.getBoundingClientRect();
-                const thumb = switchElement.querySelector('.switch-thumb');
+                const thumb = switchElement.querySelector('.switch极速3C-thumb');
                 
                 if (parseInt(thumb.style.left) > trackRect.width * 0.7) {
                     completeLogin();
