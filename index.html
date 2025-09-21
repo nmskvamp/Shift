@@ -1956,7 +1956,7 @@
             thead.appendChild(timeRow);
             thead.appendChild(clearRow);
             
-            // Тело таблицы с сотрудниками
+            // Тело таблица с сотрудниками
             employees.forEach(employee => {
                 const tr = document.createElement('tr');
                 if (!employee.active) {
@@ -2132,7 +2132,7 @@
             clearOption.className = 'dropdown-item';
             clearOption.style.color = '#ff9500';
             clearOption.innerHTML = '<i class="fas fa-times"></i> Очистить';
-            clearOption.onclick = () {
+            clearOption.onclick = () => {
                 schedule[employeeId][timeIndex] = null;
                 renderSchedule();
                 saveToFirebase();
@@ -2534,13 +2534,6 @@
             }
         }
         
-        // Сохранение заметок
-        function saveNotes() {
-            notes = document.getElementById('notes-input').value;
-            saveToFirebase();
-            addLog('Сохранение заметок');
-        }
-        
         // Массовое управление сотрудниками по цветам
         function toggleEmployeesByColor(color) {
             let hasInactive = false;
@@ -2642,6 +2635,81 @@
             addLog(`Авторотация для интервала ${timeIntervals[nextIntervalIndex]}`);
         }
         
+        // Сохранение в Excel (CSV формат)
+        function saveToExcel() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            const headers = ['Сотрудник', ...timeIntervals];
+            csvContent += headers.join(";") + "\r\n";
+            
+            employees.forEach(employee => {
+                const row = [employee.name];
+                timeIntervals.forEach((_, index) => {
+                    const assignment = schedule[employee.id]?.[index];
+                    if (assignment && assignment.rest) {
+                        row.push('/');
+                    } else if (assignment && assignment.tableId) {
+                        const tableObj = tables.find(t => t.id === assignment.tableId);
+                        row.push(tableObj ? tableObj.name : 'Стол удалён');
+                    } else if (assignment && assignment.excluded) {
+                        row.push('✖️');
+                    } else {
+                        row.push('-');
+                    }
+                });
+                csvContent += row.join(";") + "\r\n";
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'шифт_серия.csv');
+            document.body.appendChild(link);
+            
+            link.click();
+            document.body.removeChild(link);
+            addLog('Экспорт в Excel');
+        }
+        
+        // Отрисовка журнала
+        function renderJournal() {
+            const journalList = document.getElementById('journal-list');
+            journalList.innerHTML = '';
+            
+            if (logs.length === 0) {
+                const emptyMessage = document.createElement('p');
+                emptyMessage.textContent = 'Журнал пуст';
+                emptyMessage.style.textAlign = 'center';
+                emptyMessage.style.color = '#8fa0b5';
+                emptyMessage.style.margin = '20px 0';
+                journalList.appendChild(emptyMessage);
+                return;
+            }
+            
+            // Сортируем записи по дате (новые сверху)
+            const sortedLogs = [...logs].sort((a, b) => b.timestamp - a.timestamp);
+            
+            sortedLogs.forEach(log => {
+                const journalEntry = document.createElement('div');
+                journalEntry.className = 'journal-entry';
+                
+                const action = document.createElement('div');
+                action.className = 'journal-action';
+                action.textContent = log.action;
+                
+                const details = document.createElement('div');
+                details.className = 'journal-details';
+                details.innerHTML = `
+                    <span>${log.email}</span>
+                    <span>${new Date(log.timestamp).toLocaleString('ru-RU')}</span>
+                `;
+                
+                journalEntry.appendChild(action);
+                journalEntry.appendChild(details);
+                journalList.appendChild(journalEntry);
+            });
+        }
+        
         // Обработчики для DnD (перетаскивание сотрудников)
         function handleDragStart(e) {
             dragSrcEl = this;
@@ -2739,10 +2807,8 @@
                 if (e.key === 'Enter') document.getElementById('add-table').click();
             });
             
-            // Поиск сотрудников
-            document.getElementById('employee-search').addEventListener('input', renderEmployeeList);
-            
             document.getElementById('auto-rotation').addEventListener('click', autoRotation);
+            document.getElementById('save-excel').addEventListener('click', saveToExcel);
             document.getElementById('clear-schedule').addEventListener('click', clearSchedule);
             document.getElementById('backup-data').addEventListener('click', exportData);
             document.getElementById('import-data').addEventListener('click', importData);
@@ -2757,7 +2823,7 @@
                 exportData();
                 document.getElementById('confirm-clear-modal').classList.remove('active');
             });
-            document.getElementById('cancel-clear').addEventListener('click', () {
+            document.getElementById('cancel-clear').addEventListener('click', () => {
                 document.getElementById('confirm-clear-modal').classList.remove('active');
             });
             
@@ -2766,9 +2832,6 @@
             document.getElementById('comment-input').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') addComment();
             });
-            
-            // Обработчики для заметок
-            document.getElementById('save-notes-btn').addEventListener('click', saveNotes);
             
             // Обработчики для журнала
             document.getElementById('journal-btn').addEventListener('click', () => {
