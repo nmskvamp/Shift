@@ -1,3 +1,2855 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Покерный клуб</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <style>
+        /* Общие стили */
+        * {
+            box-sizing: border-box;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #e6e9ef;
+            color: #5a7d9a;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        /* Стили для страницы авторизации */
+        #login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #e6e9ef;
+            z-index: 3000;
+        }
+        
+        .login-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .large-circle {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: #e6e9ef;
+            box-shadow: -10px -10px 10px rgba(255, 255, 255, 0.7), 
+                        10px 10px 10px rgba(174, 174, 192, 0.2),
+                        15px 15px 25px rgba(100, 200, 255, 0.5);
+            position: relative;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .large-circle:hover {
+            transform: scale(1.02);
+        }
+
+        .small-circle {
+            position: absolute;
+            top: -25px;
+            right: -25px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e6e9ef;
+            box-shadow: inset -10px -10px 10px rgba(174, 174, 192, 0.25), 
+                        inset 10px 10px 10px #FFFFFF,
+                        10px 10px 20px rgba(100, 200, 255, 0.6);
+            z-index: 2;
+            transition: transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .small-circle:hover {
+            transform: scale(1.1);
+        }
+
+        .question-mark {
+            color: #ff3b30;
+            font-size: 40px;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .form-group {
+            width: 80%;
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #5a7d9a;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+
+        .switch-container {
+            width: 80%;
+            margin-top: 15px;
+        }
+
+        .switch-track {
+            width: 100%;
+            height: 40px;
+            background: #e6e9ef;
+            border-radius: 25px;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .switch-thumb {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 30px;
+            height: 30px;
+            background: #e6e9ef;
+            border-radius: 50%;
+            box-shadow: -3px -3px 5px rgba(255, 255, 255, 0.7), 
+                        3px 3px 5px rgba(174, 174, 192, 0.2);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .switch-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0;
+            background: #ff9500;
+            border-radius: 25px;
+            transition: width 0.3s ease;
+        }
+
+        .switch-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #5a7d9a;
+            font-size: 14px;
+            font-weight: bold;
+            user-select: none;
+            white-space: nowrap;
+            z-index: 1;
+        }
+
+        .swiped .switch-thumb {
+            left: calc(100% - 35px);
+        }
+
+        .swiped .switch-fill {
+            width: 100%;
+        }
+
+        .swiped .switch-text {
+            color: white;
+        }
+        
+        /* Стили для основного приложения */
+        #app-page {
+            display: none;
+            width: 100%;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            margin: 0 auto;
+            background: #e6e9ef;
+            border-radius: 15px;
+            box-shadow: -10px -10px 20px rgba(255, 255, 255, 0.7), 
+                        10px 10px 20px rgba(174, 174, 192, 0.2);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            display: block;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ff9500, transparent);
+            margin-top: 10px;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(174, 174, 192, 0.2),
+                         -2px -2px 4px rgba(255, 255, 255, 0.7);
+            color: #5a7d9a;
+            letter-spacing: 2px;
+        }
+        
+        .time-display {
+            font-size: 1.8rem;
+            background: #e6e9ef;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #5a7d9a;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #e6e9ef;
+            color: #5a7d9a;
+        }
+        
+        .btn:hover {
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .btn-primary {
+            background: #e6e9ef;
+            color: #5a7d9a;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 15px 20px;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .stat-value {
+            color: #ff9500;
+        }
+        
+        .schedule-wrapper {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        /* Палитра цветов слева от графика */
+        .color-palette-left {
+            width: 70px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            align-self: flex-start;
+        }
+        
+        .color-option-left {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .color-option-left:hover {
+            transform: scale(1.2);
+            border-color: white;
+        }
+        
+        .schedule-container {
+            flex: 1;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            background: #e6e9ef;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+            background: #e6e9ef;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            border-radius: 12px;
+        }
+        
+        .schedule-table th, .schedule-table td {
+            border: 1px solid #d1d9e6;
+            padding: 6px;
+            text-align: center;
+            transition: background-color 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .schedule-table td {
+            background: #e6e9ef;
+            color: #5a7d9a;
+            height: 30px;
+            cursor: pointer;
+        }
+        
+        .schedule-table th {
+            background: #e6e9ef;
+            color: #5a7d9a;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .schedule-table td.employee-cell {
+            background: #e6e9ef;
+            font-weight: bold;
+            color: #5a7d9a;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            min-width: 180px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .schedule-table td:hover {
+            background: rgba(210, 215, 225, 0.8);
+        }
+        
+        .schedule-table .time-header {
+            min-width: 100px;
+        }
+        
+        .schedule-table .inactive-row {
+            opacity: 0.6;
+        }
+        
+        .schedule-table .inactive-row .employee-cell {
+            text-decoration: line-through;
+        }
+        
+        /* Стили для строки с редактируемым текстом */
+        .text-row th {
+            background: #e6e9ef;
+            color: #5a7d9a;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .text-row th:hover {
+            background: rgba(210, 215, 225, 0.8);
+        }
+        
+        .text-row .text-cell {
+            min-width: 100px;
+            position: relative;
+            height: 40px;
+        }
+        
+        .text-input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            color: #5a7d9a;
+            font-weight: bold;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        
+        /* Стили для кнопок очистки столбца */
+        .clear-row th {
+            background: #e6e9ef;
+            padding: 5px;
+        }
+        
+        .clear-column-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 10px;
+            background: #ff3b30;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.7), 
+                        2px 2px 4px rgba(174, 174, 192, 0.2);
+        }
+        
+        .clear-column-btn:hover {
+            background: #ff6b60;
+        }
+        
+        /* Стили для ручной сортировки */
+        .schedule-table tbody tr {
+            cursor: move;
+        }
+        
+        .schedule-table tbody tr.dragging {
+            opacity: 0.5;
+            background: rgba(255, 149, 0, 0.2);
+        }
+        
+        /* Стили для комментариев */
+        .comments-card {
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 15px 20px;
+            flex: 1;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .comments-card h3 {
+            margin-top: 0;
+            color: #5a7d9a;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .comment-input-group {
+            display: flex;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+        
+        .comment-textarea {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #5a7d9a;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            min-height: 60px;
+            transition: height 0.2s;
+        }
+        
+        .add-comment-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            background: #ff9500;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            transition: background 0.3s;
+            align-self: flex-end;
+        }
+        
+        .add-comment-btn:hover {
+            background: #ffaa33;
+        }
+        
+        .comments-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .comment-item {
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+            position: relative;
+        }
+        
+        .comment-text {
+            margin: 0 0 8px 0;
+            color: #5a7d9a;
+            line-height: 1.4;
+        }
+        
+        .comment-date {
+            font-size: 0.75rem;
+            color: #8fa0b5;
+            margin: 0;
+        }
+        
+        .comment-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .edit-comment, .delete-comment {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.7), 
+                        2px 2px 4px rgba(174, 174, 192, 0.2);
+            transition: background;
+            font-size: 12px;
+        }
+        
+        .edit-comment {
+            background: #ff9500;
+        }
+        
+        .edit-comment:hover {
+            background: #ffaa33;
+        }
+        
+        .delete-comment {
+            background: #ff3b30;
+        }
+        
+        .delete-comment:hover {
+            background: #ff6b60;
+        }
+        
+        .auto-save-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 200, 83, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .auto-save-indicator.show {
+            opacity: 1;
+        }
+        
+        .dropdown-menu {
+            position: fixed;
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 10px;
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            min-width: 250px;
+        }
+        
+        .dropdown-item {
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+            background: #e6e9ef;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .dropdown-item:hover {
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .rest-option {
+            background: rgba(0, 200, 83, 0.3);
+            font-weight: bold;
+        }
+        
+        .rest-option:hover {
+            background: rgba(0, 200, 83, 0.5);
+        }
+        
+        .dropdown-header {
+            padding: 8px 15px;
+            font-weight: bold;
+            color: #ff9500;
+            border-bottom: 1px solid #d1d9e6;
+            margin-bottom: 8px;
+        }
+        
+        .management-section {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .management-card {
+            flex: 1;
+            min-width: 300px;
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: -5px -10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            position: relative;
+        }
+        
+        .management-card h2 {
+            color: #5a7d9a;
+            margin-top: 0;
+            border-bottom: 2px solid #d1d9e6;
+            padding-bottom: 10px;
+            font-size: 1.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .delete-all-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 15px;
+            background: #ff3b30;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .delete-all-btn:hover {
+            background: #ff6b60;
+        }
+        
+        .count-badge {
+            background: rgba(255, 149, 0, 0.2);
+            color: #ff9500;
+            border-radius: 20px;
+            padding: 5 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .input-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 20px 0 0 20px;
+            background: #e6e9ef;
+            color: #5a7a;
+            font-size: 1.1rem;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .input-group button {
+            border-radius: 0 20px 20px 0;
+            padding: 12px 20px;
+            background: #ff9500;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .input-group button:hover {
+            background: #ffaa33;
+        }
+        
+        .list-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 15px;
+            background: #e6e9ef;
+            padding: 10px;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #e6e9ef;
+            border-radius: 15px;
+            transition: background 0.2s;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .list-item:hover {
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .list-item span {
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        
+        .list-item .item-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .list-item button {
+            background: #ff3b30;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .list-item button:hover {
+            background: #ff6b60;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+            box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.7), 
+                        2px 2px 4px rgba(174, 174, 192, 0.2);
+        }
+        
+        .active {
+            background: #00c853;
+        }
+        
+        .inactive {
+            background: #ff3b30;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            font-style: italic;
+            color: #8fa0b5;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .journal-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 15px;
+            background: #e6e9ef;
+            color: #5a7d9a;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .journal-btn:hover {
+            box-shadow: inset -3px -3x 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .occupied {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+        
+        .occupied-info {
+            font-size: 0.8rem;
+            color: #ff9500;
+            margin-top: 3px;
+        }
+        
+        /* Модальные окна */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: -10px -10px 20px rgba(255, 255, 255, 0.7), 
+                        10px 10px 20px rgba(174, 174, 192, 0.2);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content h2 {
+            color: #ff9500;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        /* Стили для журнала */
+        .journal-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+            padding: 10px;
+            background: #e69ef;
+            border-radius: 15px;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        .journal-entry {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #e6e9ef;
+            border-radius: 10px;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .journal-action {
+            font-weight: bold;
+            color: #5a7d9a;
+        }
+        
+        .journal-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #8fa0b5;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            background: #e6e9ef;
+            box-shadow: inset -5x -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #5a7d9a;
+            font-size: 16px;
+            outline: none;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        /* Стили для палитры цветов */
+        .color-palette {
+            position: fixed;
+            background: #e6e9ef;
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 1000;
+            box-shadow: -10px -10px 20px rgba(255, 255, 255, 0.7), 
+                        10px 10px 20px rgba(174, 174, 192, 0.2);
+            display: none;
+            flex-wrap: wrap;
+            gap: 10px;
+            width: 200px;
+        }
+        
+        .color-palette.active {
+            display: flex;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30x;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .color-option:hover {
+            transform: scale(1.2);
+            border-color: white;
+        }
+        
+        .reset-color {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            background: #ff9500;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            box-shadow: -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .reset-color:hover {
+            background: #ffaa33;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 15px;
+            background: #e6e9ef;
+            color: #ff3b30;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        5px 5px 10px rgba(174, 174, 192, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logout-btn:hover {
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+        }
+        
+        /* Новые стили для поиска */
+        .search-container {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #5a7d9a;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.7), 
+                        inset 3px 3px 6px rgba(174, 174, 192, 0.2);
+        }
+        
+        .user-email {
+            position: absolute;
+            top: 20px;
+            right: 180px;
+            color: #5a7d9a;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .schedule-container {
+                padding: 10px;
+            }
+            
+            .schedule-table th, .schedule-table td {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .schedule-wrapper {
+                flex-direction: column;
+            }
+            
+            .color-palette-left {
+                width: 100%;
+                flex-direction: row;
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn-group {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .management-section {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .stat-item {
+                font-size: 1rem;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .color-palette {
+                width: 180px;
+                left: 50% !important;
+                transform: translateX(-50%);
+            }
+            
+            .logout-btn {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .comment-input-group {
+                flex-direction: column;
+            }
+            
+            .add-comment-btn {
+                border-radius: 20px;
+            }
+            
+            .footer-note {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .user-email {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+            
+            .delete-all-btn {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Страница авторизации -->
+    <div id="login-page">
+        <div class="login-container">
+            <div class="large-circle">
+                <div class="form-group">
+                    <input type="text" class="form-input" id="login-email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" id="login-password" placeholder="Password">
+                </div>
+                <div class="switch-container">
+                    <div class="switch-track" id="switch">
+                        <div class="switch-fill"></div>
+                        <div class="switch-thumb"></div>
+                        <div class="switch-text">Сдвиньте, чтобы войти</div>
+                    </div>
+                </div>
+            </div>
+            <div class="small-circle">
+                <div class="question-mark">?</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основное приложение -->
+    <div id="app-page">
+        <div class="user-email" id="user-email"></div>
+        <button class="logout-btn" id="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Выйти
+        </button>
+        
+        <div class="container">
+            <div class="header">
+                <h1>Покерный клуб</h1>
+                <div class="time-display" id="current-time"></div>
+            </div>
+            
+            <div class="controls">
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="auto-rotation">
+                        <i class="fas fa-sync-alt"></i> Авторотация
+                    </button>
+                    <button class="btn btn-warning" id="clear-schedule">
+                        <i class="fas fa-broom"></i> Очистить график
+                    </button>
+                    <button class="btn btn-purple" id="backup-data">
+                        <i class="fas fa-save"></i> Сохранить данные
+                    </button>
+                    <button class="btn btn-success" id="import-data">
+                        <i class="fas fa-file-import"></i> Импорт данных
+                    </button>
+                    <button class="btn btn-dark" id="reset-app">
+                        <i class="fas fa-redo"></i> Полный сброс
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Статистика над графиком -->
+            <div class="stats-row">
+                <div class="stat-item">
+                    <i class="fas fa-users"></i> Активных сотрудников: 
+                    <span class="stat-value" id="active-employees-count">0</span>/<span id="total-employees-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-table"></i> Активных столов: 
+                    <span class="stat-value" id="active-tables-count">0</span>/<span id="total-tables-count">0</span>
+                </div>
+            </div>
+            
+            <!-- Обертка для палитры и графика -->
+            <div class="schedule-wrapper">
+                <!-- Палитра цветов слева от графика -->
+                <div class="color-palette-left">
+                    <div class="color-option-left" data-color="#f7ccca" style="background-color: #f7ccca;"></div>
+                    <div class="color-option-left" data-color="#bde0fe" style="background-color: #bde0fe;"></div>
+                    <div class="color-option-left" data-color="#faffc7" style="background-color: #faffc7;"></div>
+                    <div class="color-option-left" data-color="#fefae0" style="background-color: #fefae0;"></div>
+                    <div class="color-option-left" data-color="#b1b6b2" style="background-color: #b1b6b2;"></div>
+                </div>
+                
+                <div class="schedule-container">
+                    <table class="schedule-table" id="rotation-schedule">
+                        <thead>
+                            <tr class="text-row">
+                                <th>Турнир / Время</th>
+                                <!-- Ячейки с редактируемым текстом будут добавлены динамически -->
+                            </tr>
+                            <tr>
+                                <th>Сотрудник / Время</th>
+                                <!-- Временные интервалы будут добавлены динамически -->
+                            </tr>
+                            <tr class="clear-row">
+                                <th>Очистить столбец</th>
+                                <!-- Кнопки очистки столбцов будут добавлены динамически -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Данные будут добавлены динамически -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Текстовое поле под графиком -->
+            <div class="comments-card" style="margin-top: 20px;">
+                <h3><i class="fas fa-sticky-note"></i> Заметки</h3>
+                <div class="comment-input-group" style="flex-direction: column;">
+                    <textarea class="comment-textarea" id="notes-input" placeholder="Введите ваши заметки..."></textarea>
+                    <button class="add-comment-btn" id="save-notes-btn" style="margin-top: 10px;">
+                        <i class="fas fa-save"></i> Сохранить заметки
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Статистика и комментарии -->
+            <div class="stats-container">
+                <div class="comments-card">
+                    <h3><i class="fas fa-comments"></i> Комментарии</h3>
+                    <div class="comment-input-group">
+                        <textarea class="comment-textarea" id="comment-input" placeholder="Введите ваш комментарий"></textarea>
+                        <button class="add-comment-btn" id="add-comment-btn">Добавить</button>
+                    </div>
+                    <div class="comments-list" id="comments-list">
+                        <!-- Комментарии будут здесь -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="management-section">
+                <div class="management-card">
+                    <button class="delete-all-btn" id="delete-all-employees">
+                        <i class="fas fa-trash"></i> Удалить всех
+                    </button>
+                    <h2>
+                        Управление сотрудниками
+                        <span class="count-badge" id="employee-badge">0/0</span>
+                    </h2>
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="employee-search" placeholder="Поиск по ФИО...">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="employee-name" placeholder="Введите ФИО сотрудника">
+                        <button id="add-employee"><i class="fas fa-plus"></i> Добавить</button>
+                    </div>
+                    <div class="list-container" id="employee-list">
+                        <!-- Список сотрудников будет добавлен динамически -->
+                    </div>
+                </div>
+                
+                <div class="management-card">
+                    <button class="delete-all-btn" id="delete-all-tables">
+                        <i class="fas fa-trash"></i> Удалить все
+                    </button>
+                    <h2>
+                        Управление столами
+                        <span class="count-badge" id="table-badge">0/0</span>
+                    </h2>
+                    <div class="input-group">
+                        <input type="text" id="table-name" placeholder="Введите название стола">
+                        <button id="add-table"><i class="fas fa-plus"></i> Добавить</button>
+                    </div>
+                    <div class="list-container" id="table-list">
+                        <!-- Список столов будет добавлен динамически -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-note">
+                <span>Все изменения автоматически сохраняются в Firebase.</span>
+                <button class="journal-btn" id="journal-btn">
+                    <i class="fas fa-book"></i> Журнал
+                </button>
+            </div>
+            
+            <div class="auto-save-indicator" id="auto-save-indicator">
+                <i class="fas fa-check-circle"></i> Данные сохранены
+            </div>
+            
+            <!-- Модальное окно сброса -->
+            <div class="modal" id="reset-modal">
+                <div class="modal-content">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Сброс приложения</h2>
+                    <p>Вы уверены, что хотите сбросить к базовым настройкам? Все текущие данные будут удалены и заменены демо-данными. Это действие нельзя отменить.</p>
+                    <div class="modal-buttons">
+                        <button class="btn btn-danger" id="confirm-reset">
+                            <i class="fas fa-trash-alt"></i> Да, понеслась
+                        </button>
+                        <button class="btn btn-success" id="cancel-reset">
+                            <i class="fas fa-times"></i> Отмена
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Модальное окно подтверждения очистки графика -->
+            <div class="modal" id="confirm-clear-modal">
+                <div class="modal-content">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Очистка графика</h2>
+                    <p>Вы уверены, что хотите очистить весь график? Все назначения будут удалены.</p>
+                    <p>Рекомендуем сначала сохранить данные, чтобы не потерять информацию.</p>
+                    <div class="modal-buttons">
+                        <button class="btn btn-danger" id="confirm-clear">
+                            <i class="fas fa-broom"></i> Очистить
+                        </button>
+                        <button class="btn btn-success" id="save-first">
+                            <i class="fas fa-save"></i> Сохранить данные
+                        </button>
+                        <button class="btn btn-success" id="cancel-clear">
+                            <i class="fas fa-times"></i> Отмена
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Модальное окно журнала -->
+            <div class="modal" id="journal-modal">
+                <div class="modal-content">
+                    <h2><i class="fas fa-book"></i> Журнал событий</h2>
+                    <div class="journal-list" id="journal-list">
+                        <!-- Записи журнала будут здесь -->
+                    </div>
+                    <div class="modal-buttons">
+                        <button class="btn btn-success" id="close-journal">
+                            <i class="fas fa-times"></i> Закрыть
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Модальное окно ввода пароля для журнала -->
+            <div class="modal" id="password-modal">
+                <div class="modal-content">
+                    <h2><i class="fas fa-lock"></i> Введите пароль</h2>
+                    <input type="password" class="password-input" id="journal-password" placeholder="Пароль">
+                    <div class="modal-buttons">
+                        <button class="btn btn-success" id="submit-password">
+                            <i class="fas fa-check"></i> Подтвердить
+                        </button>
+                        <button class="btn btn-danger" id="cancel-password">
+                            <i class="fas fa-times"></i> Отмена
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dropdown-container"></div>
+            
+            <!-- Палитра цветов -->
+            <div class="color-palette" id="color-palette">
+                <div class="color-option" data-color="#f7ccca" style="background-color: #f7ccca;"></div>
+                <div class="color-option" data-color="#bde0fe" style="background-color: #bde0fe;"></div>
+                <div class="color-option" data-color="#faffc7" style="background-color: #faffc7;"></div>
+                <div class="color-option" data-color="#fefae0" style="background-color: #fefae0;"></div>
+                <div class="color-option" data-color="#b1b6b2" style="background-color: #b1b6b2;"></div>
+                <button class="reset-color" id="reset-color">Сбросить цвет</button>
+            </div>
+            
+            <!-- Скрытый input для импорта данных -->
+            <input type="file" id="import-file" accept=".json" style="display: none;">
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3b9VVd2SmqYLCWcYI4sAuNucA5200N30",
+            authDomain: "project-rotation-pokercm.firebaseapp.com",
+            databaseURL: "https://project-rotation-pokercm-default-rtdb.firebaseio.com",
+            projectId: "project-rotation-pokercm",
+            storageBucket: "project-rotation-pokercm.firebasestorage.app",
+            messagingSenderId: "1020145891293",
+            appId: "1:1020145891293:web:068320820d9fd1c374a834",
+            measurementId: "G-SY4Z0RW480"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Инициализация данных
+        let employees = [];
+        let tables = [];
+        let schedule = {};
+        let employeeOrder = [];
+        let tournamentNames = {}; // Для хранения названий турниров
+        let employeeColors = {};
+        let comments = [];
+        let logs = [];
+        let notes = ""; // Для хранения заметок
+        let dragSrcEl; // Для исправления ошибки DnD
+        
+        // Генерация временных интервалов
+        const timeIntervals = generateTimeIntervals();
+        
+        // Инициализация графика
+        function initializeSchedule() {
+            employees.forEach(employee => {
+                if (!schedule[employee.id]) {
+                    schedule[employee.id] = {};
+                }
+                
+                timeIntervals.forEach((_, index) => {
+                    if (schedule[employee.id][index] === undefined) {
+                        schedule[employee.id][index] = null;
+                    }
+                });
+            });
+        }
+        
+        // Генерация временных интервалов (8:00 - 8:00 следующего дня, каждые 30 минут)
+        function generateTimeIntervals() {
+            const intervals = [];
+            let hour = 8;
+            let minute = 0;
+            
+            for (let i = 0; i < 48; i++) {
+                const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                intervals.push(timeStr);
+                
+                minute += 30;
+                if (minute >= 60) {
+                    hour += 1;
+                    minute = 0;
+                }
+                if (hour >= 24) {
+                    hour = 0;
+                }
+            }
+            
+            return intervals;
+        }
+        
+        // Обновление текущего времени
+        function updateCurrentTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('current-time').textContent = 
+                now.toLocaleDateString('ru-RU', options);
+        }
+        
+        // Обновление статистики
+        function updateStats() {
+            const activeEmployees = employees.filter(e => e.active).length;
+            const totalEmployees = employees.length;
+            
+            const activeTables = tables.filter(t => t.active).length;
+            const totalTables = tables.length;
+            
+            document.getElementById('active-employees-count').textContent = activeEmployees;
+            document.getElementById('total-employees-count').textContent = totalEmployees;
+            document.getElementById('active-tables-count').textContent = activeTables;
+            document.getElementById('total-tables-count').textContent = totalTables;
+            
+            document.getElementById('employee-badge').textContent = `${activeEmployees}/${totalEmployees}`;
+            document.getElementById('table-badge').textContent = `${activeTables}/${totalTables}`;
+        }
+        
+        // Сохранение данных в Firebase
+        function saveToFirebase() {
+            try {
+                const appRef = database.ref('appData');
+                appRef.set({
+                    employees: employees,
+                    tables: tables,
+                    schedule: schedule,
+                    employeeOrder: employeeOrder,
+                    tournamentNames: tournamentNames,
+                    employeeColors: employeeColors,
+                    comments: comments,
+                    logs: logs,
+                    notes: notes,
+                    lastSave: Date.now()
+                });
+                
+                const indicator = document.getElementById('auto-save-indicator');
+                indicator.classList.add('show');
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                }, 2000);
+                
+                updateStats();
+                return true;
+            } catch (e) {
+                console.error('Ошибка сохранения данных:', e);
+                return false;
+            }
+        }
+        
+        // Загрузка данных из Firebase
+        function loadFromFirebase() {
+            const appRef = database.ref('appData');
+            appRef.once('value').then((snapshot) => {
+                const data = snapshot.val();
+                
+                if (data) {
+                    employees = data.employees || [];
+                    tables = data.tables || [];
+                    schedule = data.schedule || {};
+                    employeeOrder = data.employeeOrder || [];
+                    tournamentNames = data.tournamentNames || {};
+                    employeeColors = data.employeeColors || {};
+                    comments = data.comments || [];
+                    logs = data.logs || [];
+                    notes = data.notes || "";
+                    
+                    if (employees.length === 0 || tables.length === 0) {
+                        createDemoData();
+                        saveToFirebase();
+                    }
+                    
+                    if (!employeeOrder || employeeOrder.length === 0) {
+                        employeeOrder = employees.map(e => e.id);
+                    }
+                    
+                    if (!employeeColors) {
+                        employeeColors = {};
+                    }
+                    
+                    if (!tournamentNames) {
+                        tournamentNames = {};
+                    }
+                    
+                    // Загружаем заметки
+                    document.getElementById('notes-input').value = notes;
+                    
+                    initializeSchedule();
+                    renderSchedule();
+                    renderEmployeeList();
+                    renderTableList();
+                    renderComments();
+                    
+                    // Очистка старых записей журнала (старше месяца)
+                    cleanOldLogs();
+                } else {
+                    createDemoData();
+                    saveToFirebase();
+                }
+            }).catch((error) => {
+                console.error('Ошибка загрузки данных:', error);
+                createDemoData();
+            });
+        }
+        
+        // Создание демо-данных
+        function createDemoData() {
+            employees = [];
+            
+            tables = [
+                { id: 1, name: "1", active: true },
+                { id: 2, name: "2", active: true },
+                { id: 3, name: "3", active: true },
+                { id: 4, name: "4", active: true },
+                { id: 5, name: "5", active: true },
+                { id: 6, name: "6", active: true },
+                { id: 7, name: "7", active: true },
+                { id: 8, name: "8", active: true },
+                { id: 9, name: "9", active: true },
+                { id: 10, name: "10", active: true },
+                { id: 11, name: "11", active: true },
+                { id: 12, name: "12", active: true }, 
+                { id: 13, name: "13", active: true }, 
+                { id: 14, name: "14", active: true }, 
+                { id: 15, name: "15", active: true }, 
+                { id: 16, name: "16", active: true },  
+                { id: 17, name: "17", active: true },
+                { id: 18, name: "18", active: true },
+                { id: 19, name: "19", active: true },
+                { id: 20, name: "20", active: true },
+                { id: 21, name: "21", active: true },
+                { id: 22, name: "П1", active: true },
+                { id: 23, name: "П2", active: true },
+                { id: 24, name: "П3", active: true },
+                { id: 25, name: "П4", active: true },
+                { id: 26, name: "П5", active: true },
+                { id: 27, name: "П6", active: true },
+                { id: 28, name: "П7", active: true },
+                { id: 29, name: "П8", active: true },
+                { id: 30, name: "Д26", active: true },
+                { id: 31, name: "Д27", active: true },
+                { id: 32, name: "Д28", active: true },
+            ];
+            
+            schedule = {};
+            initializeSchedule();
+            
+            employeeOrder = employees.map(e => e.id);
+            tournamentNames = {};
+            employeeColors = {};
+            comments = [];
+            // Журнал не очищаем при сбросе (оставляем существующие логи)
+            notes = "";
+        }
+        
+        // Добавление записи в журнал
+        function addLog(action) {
+            const user = auth.currentUser;
+            const email = user ? user.email : 'Гость';
+            
+            const logEntry = {
+                action: action,
+                email: email,
+                timestamp: Date.now()
+            };
+            
+            logs.push(logEntry);
+            saveToFirebase();
+        }
+        
+        // Очистка старых записей журнала (старше месяца)
+        function cleanOldLogs() {
+            const monthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000; // 30 дней в миллисекундах
+            logs = logs.filter(log => log.timestamp >= monthAgo);
+            saveToFirebase();
+        }
+        
+        // Сброс приложения к базовым настройкам
+        function resetToDefaults() {
+            document.getElementById('reset-modal').classList.add('active');
+        }
+        
+        // Подтверждение сброса (журнал не очищается)
+        function confirmReset() {
+            const oldLogs = [...logs]; // Сохраняем старые логи
+            
+            createDemoData();
+            
+            logs = oldLogs; // Восстанавливаем логи после сброса
+            
+            saveToFirebase();
+            renderSchedule();
+            renderEmployeeList();
+            renderTableList();
+            renderComments();
+            document.getElementById('reset-modal').classList.remove('active');
+            addLog('Полный сброс приложения (журнал сохранен)');
+        }
+        
+        // Экспорт данных (для резервного копирования)
+        function exportData() {
+            const data = {
+                employees: employees,
+                tables: tables,
+                schedule: schedule,
+                employeeOrder: employeeOrder,
+                tournamentNames: tournamentNames,
+                employeeColors: employeeColors,
+                comments: comments,
+                logs: logs,
+                notes: notes,
+                timestamp: Date.now()
+            };
+            
+            const dataStr = JSON.stringify(data);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `график_ротации_резервная_копия_${new Date().toLocaleDateString('ru-RU')}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            document.body.appendChild(linkElement);
+            
+            linkElement.click();
+            document.body.removeChild(linkElement);
+            addLog('Экспорт данных');
+        }
+        
+        // Импорт данных
+        function importData() {
+            document.getElementById('import-file').click();
+        }
+        
+        // Обработка импорта данных
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Проверка структуры данных
+                    if (data.employees && data.tables && data.schedule) {
+                        employees = data.employees;
+                        tables = data.tables;
+                        schedule = data.schedule;
+                        employeeOrder = data.employeeOrder || employees.map(e => e.id);
+                        tournamentNames = data.tournamentNames || {};
+                        employeeColors = data.employeeColors || {};
+                        comments = data.comments || [];
+                        logs = data.logs || [];
+                        notes = data.notes || "";
+                        
+                        document.getElementById('notes-input').value = notes;
+                        
+                        initializeSchedule();
+                        renderSchedule();
+                        renderEmployeeList();
+                        renderTableList();
+                        renderComments();
+                        saveToFirebase();
+                        
+                        addLog('Импорт данных из файла');
+                        alert('Данные успешно импортированы!');
+                    } else {
+                        alert('Неверный формат файла!');
+                    }
+                } catch (error) {
+                    console.error('Ошибка импорта данных:', error);
+                    alert('Ошибка при импорте данных!');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Сброс значения input для возможности повторной загрузки того же файла
+            event.target.value = '';
+        }
+        
+        // Сортировка сотрудников: активные сверху, неактивные снизу
+        function sortEmployees() {
+            employees.sort((a, b) => {
+                if (a.active && !b.active) return -1;
+                if (!a.active && b.active) return 1;
+                
+                const aIndex = employeeOrder.indexOf(a.id);
+                const bIndex = employeeOrder.indexOf(b.id);
+                
+                if (aIndex !== -1 && bIndex !== -1) {
+                    return aIndex - bIndex;
+                }
+                
+                return a.id - b.id;
+            });
+        }
+        
+        // Очистка графика
+        function clearSchedule() {
+            document.getElementById('confirm-clear-modal').classList.add('active');
+        }
+        
+        // Подтверждение очистки графика
+        function confirmClearSchedule() {
+            employees.forEach(employee => {
+                timeIntervals.forEach((_, index) => {
+                    schedule[employee.id][index] = null;
+                });
+            });
+            renderSchedule();
+            saveToFirebase();
+            document.getElementById('confirm-clear-modal').classList.remove('active');
+            addLog('Очистка графика');
+        }
+        
+        // Очистка столбца
+        function clearColumn(timeIndex) {
+            employees.forEach(employee => {
+                schedule[employee.id][timeIndex] = null;
+            });
+            renderSchedule();
+            saveToFirebase();
+            addLog(`Очистка столбца ${timeIntervals[timeIndex]}`);
+        }
+        
+        // Отрисовка таблицы графика
+        function renderSchedule() {
+            sortEmployees();
+            
+            const table = document.getElementById('rotation-schedule');
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+            
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+            
+            // Строка с редактируемым текстом (названия турниров)
+            const textRow = document.createElement('tr');
+            textRow.className = 'text-row';
+            
+            const textHeader = document.createElement('th');
+            textHeader.textContent = 'Турнир / Время';
+            textRow.appendChild(textHeader);
+            
+            timeIntervals.forEach((time, index) => {
+                const textTh = document.createElement('th');
+                textTh.className = 'text-cell';
+                
+                const textInput = document.createElement('input');
+                textInput.type = 'text';
+                textInput.className = 'text-input';
+                textInput.value = tournamentNames[index] || '';
+                textInput.placeholder = 'Название';
+                textInput.dataset.timeIndex = index;
+                
+                textInput.addEventListener('change', (e) => {
+                    tournamentNames[index] = e.target.value;
+                    saveToFirebase();
+                    addLog(`Изменение названия турнира для ${timeIntervals[index]}`);
+                });
+                
+                textTh.appendChild(textInput);
+                textRow.appendChild(textTh);
+            });
+            
+            // Строка с временными интервалами
+            const timeRow = document.createElement('tr');
+            const timeHeader = document.createElement('th');
+            timeHeader.textContent = 'Сотрудник / Время';
+            timeRow.appendChild(timeHeader);
+            
+            timeIntervals.forEach(time => {
+                const th = document.createElement('th');
+                th.textContent = time;
+                th.className = 'time-header';
+                timeRow.appendChild(th);
+            });
+            
+            // Строка с кнопками очистки столбцов
+            const clearRow = document.createElement('tr');
+            clearRow.className = 'clear-row';
+            
+            const clearHeader = document.createElement('th');
+            clearHeader.textContent = 'Очистить столбец';
+            clearRow.appendChild(clearHeader);
+            
+            timeIntervals.forEach((time, index) => {
+                const clearTh = document.createElement('th');
+                
+                const clearButton = document.createElement('button');
+                clearButton.className = 'clear-column-btn';
+                clearButton.innerHTML = '<i class="fas fa-broom"></i>';
+                clearButton.title = 'Очистить весь столбец';
+                clearButton.onclick = () => {
+                    if (confirm(`Очистить весь столбец для времени ${time}?`)) {
+                        clearColumn(index);
+                    }
+                };
+                
+                clearTh.appendChild(clearButton);
+                clearRow.appendChild(clearTh);
+            });
+            
+            thead.appendChild(textRow);
+            thead.appendChild(timeRow);
+            thead.appendChild(clearRow);
+            
+            // Тело таблицы с сотрудниками
+            employees.forEach(employee => {
+                const tr = document.createElement('tr');
+                if (!employee.active) {
+                    tr.className = 'inactive-row';
+                }
+                
+                tr.draggable = true;
+                tr.dataset.employeeId = employee.id;
+                
+                tr.addEventListener('dragstart', handleDragStart);
+                tr.addEventListener('dragover', handleDragOver);
+                tr.addEventListener('drop', handleDrop);
+                tr.addEventListener('dragend', handleDragEnd);
+                
+                const nameTd = document.createElement('td');
+                nameTd.textContent = employee.name;
+                nameTd.className = 'employee-cell';
+                nameTd.dataset.employeeId = employee.id;
+                
+                if (employeeColors[employee.id]) {
+                    nameTd.style.backgroundColor = employeeColors[employee.id];
+                    nameTd.style.color = getContrastColor(employeeColors[employee.id]);
+                }
+                
+                if (!employee.active) {
+                    nameTd.style.opacity = '0.6';
+                    nameTd.style.textDecoration = 'line-through';
+                }
+                
+                nameTd.addEventListener('click', handleEmployeeColorClick);
+                
+                tr.appendChild(nameTd);
+                
+                timeIntervals.forEach((_, index) => {
+                    const td = document.createElement('td');
+                    const assignment = schedule[employee.id]?.[index];
+                    
+                    if (assignment && assignment.rest) {
+                        td.textContent = '/';
+                        td.style.backgroundColor = 'rgba(0, 200, 83, 0.3)';
+                        td.style.fontWeight = 'bold';
+                    } else if (assignment && assignment.tableId) {
+                        const tableObj = tables.find(t => t.id === assignment.tableId);
+                        if (tableObj) {
+                            td.textContent = tableObj.name;
+                            if (!tableObj.active) {
+                                td.style.opacity = '0.7';
+                                td.style.textDecoration = 'line-through';
+                            }
+                        } else {
+                            td.textContent = 'Стол удалён';
+                            td.style.opacity = '0.5';
+                        }
+                    } else if (assignment && assignment.excluded) {
+                        td.textContent = '✖️';
+                        td.style.backgroundColor = 'rgba(255, 59, 48, 0.3)';
+                        td.style.fontWeight = 'bold';
+                    } else {
+                        td.textContent = '-';
+                        td.style.opacity = '0.5';
+                    }
+                    
+                    if (employee.active) {
+                        td.dataset.employeeId = employee.id;
+                        td.dataset.timeIndex = index;
+                        td.addEventListener('click', handleCellClick);
+                    }
+                    
+                    tr.appendChild(td);
+                });
+                
+                tbody.appendChild(tr);
+            });
+            
+            updateStats();
+        }
+        
+        // Получение занятых столов для временного интервала
+        function getOccupiedTables(timeIndex) {
+            const occupied = {};
+            employees.forEach(employee => {
+                const assignment = schedule[employee.id]?.[timeIndex];
+                if (assignment && assignment.tableId) {
+                    occupied[assignment.tableId] = true;
+                }
+            });
+            return occupied;
+        }
+        
+        // Обработка клика по ячейке
+        function handleCellClick(event) {
+            event.stopPropagation();
+            
+            const employeeId = parseInt(event.target.dataset.employeeId);
+            const timeIndex = parseInt(event.target.dataset.timeIndex);
+            
+            const occupiedTables = getOccupiedTables(timeIndex);
+            
+            const dropdown = document.createElement('div');
+            dropdown.className = 'dropdown-menu';
+            
+            const rect = event.target.getBoundingClientRect();
+            dropdown.style.left = `${rect.left}px`;
+            dropdown.style.top = `${rect.bottom}px`;
+            
+            const header = document.createElement('div');
+            header.className = 'dropdown-header';
+            header.textContent = `Назначение на ${timeIntervals[timeIndex]}`;
+            dropdown.appendChild(header);
+            
+            const restOption = document.createElement('div');
+            restOption.className = 'dropdown-item rest-option';
+            restOption.innerHTML = '<i class="fas fa-coffee"></i> /';
+            restOption.onclick = () => {
+                schedule[employeeId][timeIndex] = { rest: true };
+                renderSchedule();
+                saveToFirebase();
+                document.getElementById('dropdown-container').innerHTML = '';
+                addLog(`Назначение перерыва сотруднику ${getEmployeeName(employeeId)} на ${timeIntervals[timeIndex]}`);
+            };
+            dropdown.appendChild(restOption);
+            
+            const excludedOption = document.createElement('div');
+            excludedOption.className = 'dropdown-item';
+            excludedOption.style.color = '#ff3b30';
+            excludedOption.innerHTML = '<i class="fas fa-ban"></i> ✖️';
+            excludedOption.onclick = () => {
+                schedule[employeeId][timeIndex] = { excluded: true };
+                renderSchedule();
+                saveToFirebase();
+                document.getElementById('dropdown-container').innerHTML = '';
+                addLog(`Назначение исключения сотруднику ${getEmployeeName(employeeId)} на ${timeIntervals[timeIndex]}`);
+            };
+            dropdown.appendChild(excludedOption);
+            
+            const separator = document.createElement('div');
+            separator.style.height = '1px';
+            separator.style.background = '#d1d9e6';
+            separator.style.margin = '8px 0';
+            dropdown.appendChild(separator);
+            
+            const tablesHeader = document.createElement('div');
+            tablesHeader.className = 'dropdown-header';
+            tablesHeader.textContent = `Столы (${tables.filter(t => t.active).length} доступно):`;
+            dropdown.appendChild(tablesHeader);
+            
+            tables.filter(table => table.active).forEach(table => {
+                const tableOption = document.createElement('div');
+                tableOption.className = 'dropdown-item';
+                
+                if (occupiedTables[table.id]) {
+                    tableOption.classList.add('occupied');
+                    tableOption.innerHTML = `<i class="fas fa-ban"></i> ${table.name}`;
+                    const occupiedInfo = document.createElement('div');
+                    occupiedInfo.className = 'occupied-info';
+                    occupiedInfo.textContent = 'Занят другим сотрудником';
+                    tableOption.appendChild(occupiedInfo);
+                } else {
+                    tableOption.innerHTML = `<i class="fas fa-dice"></i> ${table.name}`;
+                    tableOption.onclick = () => {
+                        schedule[employeeId][timeIndex] = { tableId: table.id };
+                        renderSchedule();
+                        saveToFirebase();
+                        document.getElementById('dropdown-container').innerHTML = '';
+                        addLog(`Назначение стола ${table.name} сотруднику ${getEmployeeName(employeeId)} на ${timeIntervals[timeIndex]}`);
+                    };
+                }
+                
+                dropdown.appendChild(tableOption);
+            });
+            
+            const clearOption = document.createElement('div');
+            clearOption.className = 'dropdown-item';
+            clearOption.style.color = '#ff9500';
+            clearOption.innerHTML = '<i class="fas fa-times"></i> Очистить';
+            clearOption.onclick = () {
+                schedule[employeeId][timeIndex] = null;
+                renderSchedule();
+                saveToFirebase();
+                document.getElementById('dropdown-container').innerHTML = '';
+                addLog(`Очистка назначения сотруднику ${getEmployeeName(employeeId)} на ${timeIntervals[timeIndex]}`);
+            };
+            dropdown.appendChild(clearOption);
+            
+            document.getElementById('dropdown-container').innerHTML = '';
+            document.getElementById('dropdown-container').appendChild(dropdown);
+            
+            document.addEventListener('click', closeDropdowns);
+        }
+        
+        // Получение имени сотрудника по ID
+        function getEmployeeName(employeeId) {
+            const employee = employees.find(e => e.id === employeeId);
+            return employee ? employee.name : 'Неизвестный';
+        }
+        
+        // Обработка клика по имени сотрудника для выбора цвета
+        function handleEmployeeColorClick(event) {
+            event.stopPropagation();
+            
+            const employeeId = parseInt(event.target.dataset.employeeId);
+            
+            const palette = document.getElementById('color-palette');
+            palette.style.left = `${event.clientX}px`;
+            palette.style.top = `${event.clientY}px`;
+            palette.classList.add('active');
+            palette.dataset.employeeId = employeeId;
+            
+            document.getElementById('dropdown-container').innerHTML = '';
+        }
+        
+        // Функция для получения контрастного цвета текста
+        function getContrastColor(hexColor) {
+            if (!hexColor) return '#000000';
+            
+            const r = parseInt(hexColor.substr(1, 2), 16);
+            const g = parseInt(hexColor.substr(3, 2), 16);
+            const b = parseInt(hexColor.substr(5, 2), 16);
+            
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            
+            return brightness > 128 ? '#000000' : '#FFFFFF';
+        }
+        
+        // Закрытие всех выпадающих меню
+        function closeDropdowns(event) {
+            const dropdownContainer = document.getElementById('dropdown-container');
+            if (dropdownContainer && !dropdownContainer.contains(event.target)) {
+                dropdownContainer.innerHTML = '';
+            }
+            
+            const palette = document.getElementById('color-palette');
+            if (palette && !palette.contains(event.target) && 
+                !event.target.classList.contains('employee-cell')) {
+                palette.classList.remove('active');
+            }
+        }
+        
+        // Отрисовка списка сотрудников с поддержкой поиска
+        function renderEmployeeList() {
+            sortEmployees();
+            
+            const listContainer = document.getElementById('employee-list');
+            listContainer.innerHTML = '';
+            
+            const searchText = document.getElementById('employee-search').value.toLowerCase();
+            
+            employees.forEach(employee => {
+                if (searchText && !employee.name.toLowerCase().includes(searchText)) {
+                    return;
+                }
+                
+                const listItem = document.createElement('div');
+                listItem.className = 'list-item';
+                
+                const span = document.createElement('span');
+                const status = document.createElement('span');
+                status.className = `status-indicator ${employee.active ? 'active' : 'inactive'}`;
+                span.appendChild(status);
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = employee.name;
+                nameSpan.addEventListener('click', () => {
+                    editEmployeeName(employee);
+                });
+                
+                span.appendChild(nameSpan);
+                
+                const itemActions = document.createElement('div');
+                itemActions.className = 'item-actions';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteEmployee(employee);
+                };
+                
+                const pauseBtn = document.createElement('button');
+                if (employee.active) {
+                    pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    pauseBtn.onclick = () => {
+                        employee.active = false;
+                        renderEmployeeList();
+                        renderSchedule();
+                        saveToFirebase();
+                        addLog(`Перевод сотрудника ${employee.name} в паузу`);
+                    };
+                } else {
+                    pauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    pauseBtn.onclick = () => {
+                        employee.active = true;
+                        renderEmployeeList();
+                        renderSchedule();
+                        saveToFirebase();
+                        addLog(`Восстановление сотрудника ${employee.name}`);
+                    };
+                }
+                
+                itemActions.appendChild(deleteBtn);
+                itemActions.appendChild(pauseBtn);
+                
+                listItem.appendChild(span);
+                listItem.appendChild(itemActions);
+                listContainer.appendChild(listItem);
+            });
+            
+            updateStats();
+        }
+        
+        // Редактирование имени сотрудника
+        function editEmployeeName(employee) {
+            const newName = prompt('Введите новое имя сотрудника:', employee.name);
+            if (newName && newName.trim() !== '') {
+                const oldName = employee.name;
+                employee.name = newName.trim();
+                renderEmployeeList();
+                renderSchedule();
+                saveToFirebase();
+                addLog(`Изменение имени сотрудника с "${oldName}" на "${employee.name}"`);
+            }
+        }
+        
+        // Удаление сотрудника
+        function deleteEmployee(employee) {
+            if (confirm(`Удалить сотрудника ${employee.name}?`)) {
+                // Удаляем сотрудника из всех массивов
+                const index = employees.findIndex(e => e.id === employee.id);
+                if (index !== -1) {
+                    employees.splice(index, 1);
+                }
+                
+                // Удаляем из порядка сотрудников
+                const orderIndex = employeeOrder.indexOf(employee.id);
+                if (orderIndex !== -1) {
+                    employeeOrder.splice(orderIndex, 1);
+                }
+                
+                // Удаляем из расписания
+                delete schedule[employee.id];
+                
+                // Удаляем цвет сотрудника
+                delete employeeColors[employee.id];
+                
+                renderEmployeeList();
+                renderSchedule();
+                saveToFirebase();
+                addLog(`Удаление сотрудника: ${employee.name}`);
+            }
+        }
+        
+        // Удаление всех сотрудников
+        function deleteAllEmployees() {
+            if (confirm('Удалить всех сотрудников? Это действие нельзя отменить.')) {
+                employees = [];
+                employeeOrder = [];
+                schedule = {};
+                employeeColors = {};
+                
+                renderEmployeeList();
+                renderSchedule();
+                saveToFirebase();
+                addLog('Удаление всех сотрудников');
+            }
+        }
+        
+        // Отрисовка списка столов
+        function renderTableList() {
+            const listContainer = document.getElementById('table-list');
+            listContainer.innerHTML = '';
+            
+            tables.forEach(table => {
+                const listItem = document.createElement('div');
+                listItem.className = 'list-item';
+                
+                const span = document.createElement('span');
+                const status = document.createElement('span');
+                status.className = `status-indicator ${table.active ? 'active' : 'inactive'}`;
+                span.appendChild(status);
+                span.appendChild(document.createTextNode(table.name));
+                
+                const itemActions = document.createElement('div');
+                itemActions.className = 'item-actions';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.onclick = () => {
+                    deleteTable(table);
+                };
+                
+                const toggleBtn = document.createElement('button');
+                if (table.active) {
+                    toggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    toggleBtn.onclick = () => {
+                        table.active = false;
+                        renderTableList();
+                        renderSchedule();
+                        saveToFirebase();
+                        addLog(`Закрытие стола ${table.name}`);
+                    };
+                } else {
+                    toggleBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    toggleBtn.onclick = () => {
+                        table.active = true;
+                        renderTableList();
+                        renderSchedule();
+                        saveToFirebase();
+                        addLog(`Открытие стола ${table.name}`);
+                    };
+                }
+                
+                itemActions.appendChild(deleteBtn);
+                itemActions.appendChild(toggleBtn);
+                
+                listItem.appendChild(span);
+                listItem.appendChild(itemActions);
+                listContainer.appendChild(listItem);
+            });
+            
+            updateStats();
+        }
+        
+        // Удаление стола
+        function deleteTable(table) {
+            if (confirm(`Удалить стол ${table.name}?`)) {
+                const index = tables.findIndex(t => t.id === table.id);
+                if (index !== -1) {
+                    tables.splice(index, 1);
+                    
+                    // Удаляем все назначения на этот стол
+                    employees.forEach(employee => {
+                        timeIntervals.forEach((_, timeIndex) => {
+                            const assignment = schedule[employee.id]?.[timeIndex];
+                            if (assignment && assignment.tableId === table.id) {
+                                schedule[employee.id][timeIndex] = null;
+                            }
+                        });
+                    });
+                    
+                    renderTableList();
+                    renderSchedule();
+                    saveToFirebase();
+                    addLog(`Удаление стола: ${table.name}`);
+                }
+            }
+        }
+        
+        // Удаление всех столов
+        function deleteAllTables() {
+            if (confirm('Удалить все столы? Это действие нельзя отменить.')) {
+                tables = [];
+                
+                // Удаляем все назначения на столы
+                employees.forEach(employee => {
+                    timeIntervals.forEach((_, timeIndex) => {
+                        const assignment = schedule[employee.id]?.[timeIndex];
+                        if (assignment && assignment.tableId) {
+                            schedule[employee.id][timeIndex] = null;
+                        }
+                    });
+                });
+                
+                renderTableList();
+                renderSchedule();
+                saveToFirebase();
+                addLog('Удаление всех столов');
+            }
+        }
+        
+        // Отрисовка комментариев
+        function renderComments() {
+            const commentsList = document.getElementById('comments-list');
+            commentsList.innerHTML = '';
+            
+            if (comments.length === 0) {
+                const emptyMessage = document.createElement('p');
+                emptyMessage.textContent = 'Пока нет комментариев';
+                emptyMessage.style.textAlign = 'center';
+                emptyMessage.style.color = '#8fa0b5';
+                emptyMessage.style.margin = '20px 0';
+                commentsList.appendChild(emptyMessage);
+                return;
+            }
+            
+            // Сортируем комментарии по дате (новые сверху)
+            comments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            comments.forEach((comment, index) => {
+                const commentItem = document.createElement('div');
+                commentItem.className = 'comment-item';
+                
+                const commentText = document.createElement('p');
+                commentText.className = 'comment-text';
+                commentText.textContent = comment.text;
+                
+                const commentDate = document.createElement('p');
+                commentDate.className = 'comment-date';
+                commentDate.textContent = new Date(comment.timestamp).toLocaleString('ru-RU');
+                
+                const commentActions = document.createElement('div');
+                commentActions.className = 'comment-actions';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-comment';
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.onclick = () => {
+                    editComment(index);
+                };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-comment';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.onclick = () => {
+                    deleteComment(index);
+                };
+                
+                commentActions.appendChild(editBtn);
+                commentActions.appendChild(deleteBtn);
+                
+                commentItem.appendChild(commentText);
+                commentItem.appendChild(commentDate);
+                commentItem.appendChild(commentActions);
+                
+                commentsList.appendChild(commentItem);
+            });
+        }
+        
+        // Добавление комментария
+        function addComment() {
+            const commentInput = document.getElementById('comment-input');
+            const text = commentInput.value.trim();
+            
+            if (text) {
+                const user = auth.currentUser;
+                const email = user ? user.email : 'Гость';
+                
+                const newComment = {
+                    text: text,
+                    timestamp: Date.now(),
+                    author: email
+                };
+                
+                comments.push(newComment);
+                renderComments();
+                saveToFirebase();
+                
+                // Очищаем поле ввода
+                commentInput.value = '';
+                addLog(`Добавлен комментарий: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`);
+            }
+        }
+        
+        // Редактирование комментария
+        function editComment(index) {
+            const comment = comments[index];
+            const newText = prompt('Редактировать комментарий:', comment.text);
+            
+            if (newText !== null && newText.trim() !== '') {
+                comment.text = newText.trim();
+                comment.timestamp = Date.now();
+                renderComments();
+                saveToFirebase();
+                addLog(`Редактирование комментария: ${comment.text.substring(0, 30)}${comment.text.length > 30 ? '...' : ''}`);
+            }
+        }
+        
+        // Удаление комментария
+        function deleteComment(index) {
+            const comment = comments[index];
+            if (confirm('Удалить комментарий?')) {
+                comments.splice(index, 1);
+                renderComments();
+                saveToFirebase();
+                addLog(`Удален комментарий: ${comment.text.substring(0, 30)}${comment.text.length > 30 ? '...' : ''}`);
+            }
+        }
+        
+        // Сохранение заметок
+        function saveNotes() {
+            notes = document.getElementById('notes-input').value;
+            saveToFirebase();
+            addLog('Сохранение заметок');
+        }
+        
+        // Массовое управление сотрудниками по цветам
+        function toggleEmployeesByColor(color) {
+            let hasInactive = false;
+            let hasActive = false;
+            
+            // Проверяем, есть ли сотрудники с этим цветом в паузе или активные
+            employees.forEach(employee => {
+                if (employeeColors[employee.id] === color) {
+                    if (employee.active) {
+                        hasActive = true;
+                    } else {
+                        hasInactive = true;
+                    }
+                }
+            });
+            
+            // Определяем действие: если есть неактивные, активируем всех, иначе переводим в паузу
+            const activate = hasInactive;
+            
+            employees.forEach(employee => {
+                if (employeeColors[employee.id] === color) {
+                    employee.active = activate;
+                }
+            });
+            
+            renderEmployeeList();
+            renderSchedule();
+            saveToFirebase();
+            
+            const action = activate ? 'активации' : 'паузе';
+            addLog(`Массовое управление: перевод сотрудников цвета ${color} в ${action}`);
+        }
+        
+        // Авторотация
+        function autoRotation() {
+            const now = new Date();
+            const startHour = 8;
+            const startMinute = 0;
+            
+            const startTime = new Date();
+            startTime.setHours(startHour, startMinute, 0, 0);
+            
+            if (now < startTime) {
+                startTime.setDate(startTime.getDate() - 1);
+            }
+            
+            const diffMinutes = (now - startTime) / (1000 * 60);
+            const currentIntervalIndex = Math.floor(diffMinutes / 30);
+            
+            const nextIntervalIndex = currentIntervalIndex + 1;
+            
+            if (nextIntervalIndex >= timeIntervals.length) {
+                return;
+            }
+            
+            const prevAssignments = {};
+            employees.forEach(employee => {
+                if (employee.active) {
+                    prevAssignments[employee.id] = schedule[employee.id]?.[nextIntervalIndex - 1] || null;
+                }
+            });
+            
+            const availableTables = tables.filter(table => table.active).map(table => table.id);
+            const tableUsage = {};
+            
+            function getRandomItem(arr) {
+                return arr[Math.floor(Math.random() * arr.length)];
+            }
+            
+            employees.filter(emp => emp.active).forEach(employee => {
+                if (schedule[employee.id][nextIntervalIndex]) return;
+                
+                const prev = prevAssignments[employee.id];
+                
+                // Пропускаем если предыдущее назначение - исключение
+                if (prev && prev.excluded) return;
+                
+                const availableForEmployee = [...availableTables];
+                if (prev && prev.tableId) {
+                    const index = availableForEmployee.indexOf(prev.tableId);
+                    if (index !== -1) availableForEmployee.splice(index, 1);
+                }
+                
+                if (availableForEmployee.length > 0) {
+                    const selectedTable = getRandomItem(availableForEmployee);
+                    schedule[employee.id][nextIntervalIndex] = { tableId: selectedTable };
+                    
+                    const tableIndex = availableTables.indexOf(selectedTable);
+                    if (tableIndex !== -1) availableTables.splice(tableIndex, 1);
+                    
+                    tableUsage[selectedTable] = true;
+                } else {
+                    schedule[employee.id][nextIntervalIndex] = { rest: true };
+                }
+            });
+            
+            renderSchedule();
+            saveToFirebase();
+            addLog(`Авторотация для интервала ${timeIntervals[nextIntervalIndex]}`);
+        }
+        
+        // Обработчики для DnD (перетаскивание сотрудников)
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.employeeId);
+            this.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDrop(e) {
+            e.stopPropagation();
+            
+            if (dragSrcEl !== this) {
+                const draggedId = parseInt(dragSrcEl.dataset.employeeId);
+                const targetId = parseInt(this.dataset.employeeId);
+                
+                const draggedIndex = employeeOrder.indexOf(draggedId);
+                const targetIndex = employeeOrder.indexOf(targetId);
+                
+                employeeOrder.splice(draggedIndex, 1);
+                employeeOrder.splice(targetIndex, 0, draggedId);
+                
+                saveToFirebase();
+                renderSchedule();
+                addLog(`Изменение порядка сотрудников: ${getEmployeeName(draggedId)} перемещен`);
+            }
+            
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+        }
+        
+        // Инициализация приложения
+        function initApp() {
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // Обработчики событий
+            document.getElementById('add-employee').addEventListener('click', () => {
+                const nameInput = document.getElementById('employee-name');
+                const name = nameInput.value.trim();
+                
+                if (name && !employees.some(e => e.name === name)) {
+                    const newEmployee = {
+                        id: Date.now(),
+                        name: name,
+                        active: true
+                    };
+                    
+                    employees.push(newEmployee);
+                    employeeOrder.push(newEmployee.id);
+                    
+                    schedule[newEmployee.id] = {};
+                    timeIntervals.forEach((_, index) => {
+                        schedule[newEmployee.id][index] = null;
+                    });
+                    
+                    nameInput.value = '';
+                    renderEmployeeList();
+                    renderSchedule();
+                    saveToFirebase();
+                    addLog(`Добавлен сотрудник: ${name}`);
+                }
+            });
+            
+            document.getElementById('add-table').addEventListener('click', () => {
+                const nameInput = document.getElementById('table-name');
+                const name = nameInput.value.trim();
+                
+                if (name && !tables.some(t => t.name === name)) {
+                    tables.push({
+                        id: Date.now(),
+                        name: name,
+                        active: true
+                    });
+                    nameInput.value = '';
+                    renderTableList();
+                    saveToFirebase();
+                    addLog(`Добавлен стол: ${name}`);
+                }
+            });
+            
+            document.getElementById('employee-name').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('add-employee').click();
+            });
+            
+            document.getElementById('table-name').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('add-table').click();
+            });
+            
+            // Поиск сотрудников
+            document.getElementById('employee-search').addEventListener('input', renderEmployeeList);
+            
+            document.getElementById('auto-rotation').addEventListener('click', autoRotation);
+            document.getElementById('clear-schedule').addEventListener('click', clearSchedule);
+            document.getElementById('backup-data').addEventListener('click', exportData);
+            document.getElementById('import-data').addEventListener('click', importData);
+            document.getElementById('reset-app').addEventListener('click', resetToDefaults);
+            document.getElementById('confirm-reset').addEventListener('click', confirmReset);
+            document.getElementById('cancel-reset').addEventListener('click', () => {
+                document.getElementById('reset-modal').classList.remove('active');
+            });
+            
+            document.getElementById('confirm-clear').addEventListener('click', confirmClearSchedule);
+            document.getElementById('save-first').addEventListener('click', () => {
+                exportData();
+                document.getElementById('confirm-clear-modal').classList.remove('active');
+            });
+            document.getElementById('cancel-clear').addEventListener('click', () {
+                document.getElementById('confirm-clear-modal').classList.remove('active');
+            });
+            
+            // Обработчики для комментариев
+            document.getElementById('add-comment-btn').addEventListener('click', addComment);
+            document.getElementById('comment-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addComment();
+            });
+            
+            // Обработчики для заметок
+            document.getElementById('save-notes-btn').addEventListener('click', saveNotes);
+            
+            // Обработчики для журнала
+            document.getElementById('journal-btn').addEventListener('click', () => {
+                document.getElementById('password-modal').classList.add('active');
+            });
+            
+            document.getElementById('submit-password').addEventListener('click', () => {
+                const password = document.getElementById('journal-password').value;
+                if (password === '77777') {
+                    document.getElementById('password-modal').classList.remove('active');
+                    document.getElementById('journal-modal').classList.add('active');
+                    renderJournal();
+                } else {
+                    alert('Неверный пароль');
+                }
+            });
+            
+            document.getElementById('cancel-password').addEventListener('click', () => {
+                document.getElementById('password-modal').classList.remove('active');
+            });
+            
+            document.getElementById('close-journal').addEventListener('click', () => {
+                document.getElementById('journal-modal').classList.remove('active');
+            });
+            
+            // Обработчики для выбора цвета
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    const color = e.target.dataset.color;
+                    const employeeId = parseInt(document.getElementById('color-palette').dataset.employeeId);
+                    
+                    if (employeeId && color) {
+                        employeeColors[employeeId] = color;
+                        renderSchedule();
+                        saveToFirebase();
+                        addLog(`Изменение цвета сотрудника ${getEmployeeName(employeeId)} на ${color}`);
+                    }
+                    
+                    document.getElementById('color-palette').classList.remove('active');
+                });
+            });
+            
+            document.getElementById('reset-color').addEventListener('click', () => {
+                const employeeId = parseInt(document.getElementById('color-palette').dataset.employeeId);
+                
+                if (employeeId) {
+                    delete employeeColors[employeeId];
+                    renderSchedule();
+                    saveToFirebase();
+                    addLog(`Сброс цвета сотрудника ${getEmployeeName(employeeId)}`);
+                }
+                
+                document.getElementById('color-palette').classList.remove('active');
+            });
+            
+            // Обработчики для массового управления цветами
+            document.querySelectorAll('.color-option-left').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    const color = e.target.dataset.color;
+                    toggleEmployeesByColor(color);
+                });
+            });
+            
+            // Обработчики для удаления всех сотрудников и столов
+            document.getElementById('delete-all-employees').addEventListener('click', deleteAllEmployees);
+            document.getElementById('delete-all-tables').addEventListener('click', deleteAllTables);
+            
+            // Обработчик для закрытия выпадающих меню
+            document.addEventListener('click', closeDropdowns);
+            
+            // Кнопка выхода
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                auth.signOut();
+            });
+            
+            // Обработчик импорта данных
+            document.getElementById('import-file').addEventListener('change', handleImport);
+        }
+
+        // ==================== НОВЫЙ КОД АУТЕНТИФИКАЦИИ ====================
+        
         // Обработчик состояния аутентификации
         auth.onAuthStateChanged((user) => {
             if (user) {
