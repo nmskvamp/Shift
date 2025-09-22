@@ -558,6 +558,14 @@
             margin: 0 0 8px 0;
             color: #5a7d9a;
             line-height: 1.4;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        
+        .comment-text:hover {
+            background-color: rgba(255, 149, 0, 0.1);
         }
         
         .comment-date {
@@ -1111,6 +1119,23 @@
             font-style: italic;
         }
         
+        /* Стили для модального окна редактирования комментария */
+        .edit-comment-modal textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: none;
+            border-radius: 15px;
+            background: #e6e9ef;
+            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7), 
+                        inset 5px 5px 10px rgba(174, 174, 192, 0.2);
+            color: #5a7d9a;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        
         @media (max-width: 1200px) {
             .schedule-container {
                 padding: 10px;
@@ -1452,6 +1477,22 @@
                 </div>
             </div>
             
+            <!-- Модальное окно редактирования комментария -->
+            <div class="modal" id="edit-comment-modal">
+                <div class="modal-content edit-comment-modal">
+                    <h2><i class="fas fa-edit"></i> Редактирование комментария</h2>
+                    <textarea id="edit-comment-text"></textarea>
+                    <div class="modal-buttons">
+                        <button class="btn btn-success" id="save-comment-btn">
+                            <i class="fas fa-check"></i> Сохранить
+                        </button>
+                        <button class="btn btn-danger" id="cancel-edit-comment-btn">
+                            <i class="fas fa-times"></i> Отмена
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
             <div id="dropdown-container"></div>
             
             <!-- Палитра цветов -->
@@ -1497,6 +1538,7 @@
         let comments = [];
         let logs = [];
         let searchQuery = ''; // Для хранения текущего поискового запроса
+        let currentEditingCommentIndex = -1; // Для хранения индекса редактируемого комментария
         
         // Генерация временных интервалов
         const timeIntervals = generateTimeIntervals();
@@ -1870,7 +1912,7 @@
             addLog(`Очистка столбца ${timeIntervals[timeIndex]}`);
         }
         
-        // Отрисовка таблицы графика
+        // Отрисовка таблица графика
         function renderSchedule() {
             sortEmployees();
             
@@ -2458,6 +2500,10 @@
                 const commentText = document.createElement('p');
                 commentText.className = 'comment-text';
                 commentText.textContent = comment.text;
+                // Добавляем обработчик клика для редактирования
+                commentText.addEventListener('click', () => {
+                    openEditCommentModal(index);
+                });
                 
                 const commentDate = document.createElement('p');
                 commentDate.className = 'comment-date';
@@ -2466,21 +2512,15 @@
                 const commentActions = document.createElement('div');
                 commentActions.className = 'comment-actions';
                 
-                const editBtn = document.createElement('button');
-                editBtn.className = 'edit-comment';
-                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-                editBtn.onclick = () => {
-                    editComment(index);
-                };
-                
+                // Убираем кнопку редактирования, оставляем только удаление
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'delete-comment';
                 deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-                deleteBtn.onclick = () => {
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation(); // Предотвращаем всплытие события
                     deleteComment(index);
                 };
                 
-                commentActions.appendChild(editBtn);
                 commentActions.appendChild(deleteBtn);
                 
                 commentItem.appendChild(commentText);
@@ -2489,6 +2529,30 @@
                 
                 commentsList.appendChild(commentItem);
             });
+        }
+        
+        // Функция открытия модального окна редактирования комментария
+        function openEditCommentModal(index) {
+            currentEditingCommentIndex = index;
+            const comment = comments[index];
+            document.getElementById('edit-comment-text').value = comment.text;
+            document.getElementById('edit-comment-modal').classList.add('active');
+        }
+
+        // Функция сохранения отредактированного комментария
+        function saveEditedComment() {
+            if (currentEditingCommentIndex !== -1) {
+                const newText = document.getElementById('edit-comment-text').value.trim();
+                if (newText) {
+                    const comment = comments[currentEditingCommentIndex];
+                    comment.text = newText;
+                    comment.timestamp = Date.now();
+                    renderComments();
+                    saveToFirebase();
+                    document.getElementById('edit-comment-modal').classList.remove('active');
+                    addLog(`Редактирование комментария: ${comment.text.substring(0, 30)}${comment.text.length > 30 ? '...' : ''}`);
+                }
+            }
         }
         
         // Добавление комментария
@@ -2513,20 +2577,6 @@
                 // Очищаем поле ввода
                 commentInput.value = '';
                 addLog(`Добавлен комментарий: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`);
-            }
-        }
-        
-        // Редактирование комментария
-        function editComment(index) {
-            const comment = comments[index];
-            const newText = prompt('Редактировать комментарий:', comment.text);
-            
-            if (newText !== null && newText.trim() !== '') {
-                comment.text = newText.trim();
-                comment.timestamp = Date.now();
-                renderComments();
-                saveToFirebase();
-                addLog(`Редактирование комментария: ${comment.text.substring(0, 30)}${comment.text.length > 30 ? '...' : ''}`);
             }
         }
         
@@ -2865,6 +2915,12 @@
             document.getElementById('add-comment-btn').addEventListener('click', addComment);
             document.getElementById('comment-input').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') addComment();
+            });
+            
+            // Обработчики для модального окна редактирования комментария
+            document.getElementById('save-comment-btn').addEventListener('click', saveEditedComment);
+            document.getElementById('cancel-edit-comment-btn').addEventListener('click', () => {
+                document.getElementById('edit-comment-modal').classList.remove('active');
             });
             
             // Обработчики для журнала
