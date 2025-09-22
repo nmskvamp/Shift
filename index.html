@@ -481,33 +481,6 @@
             opacity: 0.5;
             background: rgba(255, 149, 0, 0.2);
         }
-        /* Добавляем стиль для кликабельного текста комментария */
-        .comment-text { 
-            cursor: pointer;
-            transition: background-color 0.2s;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        
-        .comment-text:hover {
-            background-color: rgba(255, 149, 0, 0.1);
-        }
-        /* Стили для модального окна редактирования комментария */
-        .edit-comment-modal textarea {
-            width: 100%;
-            min-height: 100px;
-            padding: 12px;
-            border: none;
-            border-radius: 15px;
-            background: #e6e9ef;
-            box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.7),
-            inset 5px 5px 10px rgba(174, 174, 192, 0.2);
-            color: #5a7d9a;
-            font-size: 14px;
-            outline: none;
-            resize: vertical;
-            margin-bottom: 15px;
-        }
         
         /* Стили для комментариев */
         .comments-card {
@@ -1342,21 +1315,6 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <!-- Добавляем модальное окно для редактирования комментария -->
-            <div class="modal" id="edit-comment-modal">
-                <div class="modal-content edit-comment-modal">
-                    <h2><i class="fas fa-edit"></i> Редактирование комментария</h2>
-                    <textarea id="edit-comment-text"></textarea>
-                    <div class="modal-buttons">
-                        <button class="btn btn-success" id="save-comment-btn">
-                            <i class="fas fa-check"></i> Сохранить
-                        </button>
-                        <button class="btn btn-danger" id="cancel-edit-comment-btn">
-                            <i class="fas fa-times"></i> Отмена
-                        </button>
-                    </div>
-                 </div>
             </div>
             
             <!-- Статистика и комментарии -->
@@ -2488,96 +2446,51 @@
                 emptyMessage.style.margin = '20px 0';
                 commentsList.appendChild(emptyMessage);
                 return;
+            }
             
-        // Глобальная переменная для хранения индекса редактируемого комментария
-let currentEditingCommentIndex = -1;
-
-// Функция открытия модального окна редактирования комментария
-function openEditCommentModal(index) {
-    currentEditingCommentIndex = index;
-    const comment = comments[index];
-    document.getElementById('edit-comment-text').value = comment.text;
-    document.getElementById('edit-comment-modal').classList.add('active');
-}
-
-// Функция сохранения отредактированного комментария
-function saveEditedComment() {
-    if (currentEditingCommentIndex !== -1) {
-        const newText = document.getElementById('edit-comment-text').value.trim();
-        if (newText) {
-            const comment = comments[currentEditingCommentIndex];
-            comment.text = newText;
-            comment.timestamp = Date.now();
-            renderComments();
-            saveToFirebase();
-            document.getElementById('edit-comment-modal').classList.remove('active');
-            addLog(`Редактирование комментария: ${comment.text.substring(0, 30)}${comment.text.length > 30 ? '...' : ''}`);
+            // Сортируем комментарии по дате (новые сверху)
+            comments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            comments.forEach((comment, index) => {
+                const commentItem = document.createElement('div');
+                commentItem.className = 'comment-item';
+                
+                const commentText = document.createElement('p');
+                commentText.className = 'comment-text';
+                commentText.textContent = comment.text;
+                
+                const commentDate = document.createElement('p');
+                commentDate.className = 'comment-date';
+                commentDate.textContent = new Date(comment.timestamp).toLocaleString('ru-RU');
+                
+                const commentActions = document.createElement('div');
+                commentActions.className = 'comment-actions';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'edit-comment';
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.onclick = () => {
+                    editComment(index);
+                };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-comment';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.onclick = () => {
+                    deleteComment(index);
+                };
+                
+                commentActions.appendChild(editBtn);
+                commentActions.appendChild(deleteBtn);
+                
+                commentItem.appendChild(commentText);
+                commentItem.appendChild(commentDate);
+                commentItem.appendChild(commentActions);
+                
+                commentsList.appendChild(commentItem);
+            });
         }
-    }
-}
-
-// В функции renderComments изменяем создание элемента комментария:
-function renderComments() {
-    const commentsList = document.getElementById('comments-list');
-    commentsList.innerHTML = '';
-    
-    if (comments.length === 0) {
-        const emptyMessage = document.createElement('p');
-        emptyMessage.textContent = 'Пока нет комментариев';
-        emptyMessage.style.textAlign = 'center';
-        emptyMessage.style.color = '#8fa0b5';
-        emptyMessage.style.margin = '20px 0';
-        commentsList.appendChild(emptyMessage);
-        return;
-    }
-    
-    // Сортируем комментарии по дате (новые сверху)
-    comments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    
-    comments.forEach((comment, index) => {
-        const commentItem = document.createElement('div');
-        commentItem.className = 'comment-item';
         
-        const commentText = document.createElement('p');
-        commentText.className = 'comment-text';
-        commentText.textContent = comment.text;
-        // Добавляем обработчик клика для редактирования
-        commentText.addEventListener('click', () => {
-            openEditCommentModal(index);
-        });
-        
-        const commentDate = document.createElement('p');
-        commentDate.className = 'comment-date';
-        commentDate.textContent = new Date(comment.timestamp).toLocaleString('ru-RU');
-        
-        const commentActions = document.createElement('div');
-        commentActions.className = 'comment-actions';
-        
-        // Убираем кнопку редактирования, оставляем только удаление
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-comment';
-        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-        deleteBtn.onclick = (e) => {
-            e.stopPropagation(); // Предотвращаем всплытие события
-            deleteComment(index);
-        };
-        
-        commentActions.appendChild(deleteBtn);
-        
-        commentItem.appendChild(commentText);
-        commentItem.appendChild(commentDate);
-        commentItem.appendChild(commentActions);
-        
-        commentsList.appendChild(commentItem);
-    });
-}
-
-// Добавляем обработчики событий для модального окна редактирования комментария
-document.getElementById('save-comment-btn').addEventListener('click', saveEditedComment);
-document.getElementById('cancel-edit-comment-btn').addEventListener('click', () => {
-    document.getElementById('edit-comment-modal').classList.remove('active');
-});
-}
         // Добавление комментария
         function addComment() {
             const commentInput = document.getElementById('comment-input');
